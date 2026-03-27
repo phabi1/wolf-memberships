@@ -1,0 +1,95 @@
+import Box from "@mui/material/Box";
+import { PropsWithChildren, useMemo } from "react";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+
+export type Action = {
+  name: string;
+  label: string;
+  handler?: () => void;
+};
+
+export type PageProps = PropsWithChildren<{
+  title: string;
+  subtitle?: string;
+  actions?: Action[];
+}>;
+
+function PageActions({ actions }: { actions: Action[] }) {
+  const primaryAction = useMemo(() => actions[0], [actions]);
+
+  const secondaryActions = useMemo(
+    () => actions.filter((action) => action !== primaryAction),
+    [actions, primaryAction],
+  );
+
+  const hasSecondaryAction = useMemo(
+    () => secondaryActions.length > 0,
+    [secondaryActions],
+  );
+
+  const handleActionClick = (action: Action) => {
+    if (action.handler) {
+      action.handler();
+    }
+  };
+
+  return (
+    <div>
+      <Button
+        variant="contained"
+        onClick={() => handleActionClick(primaryAction)}
+      >
+        {primaryAction.label}
+      </Button>
+      {hasSecondaryAction &&
+        secondaryActions.map((action) => (
+          <Button key={action.name} onClick={() => handleActionClick(action)}>
+            {action.label}
+          </Button>
+        ))}
+    </div>
+  );
+}
+
+function PageHeader({
+  title,
+  subtitle,
+  actions,
+}: {
+  title: string;
+  subtitle?: string;
+  actions?: Action[];
+}) {
+  return (
+    <Box
+      sx={{ display: "flex", justifyContent: "space-between", gap: 4, mb: 4 }}
+    >
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          {title}
+        </Typography>
+        {subtitle && (
+          <Typography variant="subtitle1" gutterBottom>
+            {subtitle}
+          </Typography>
+        )}
+      </Box>
+      {actions && <PageActions actions={actions} />}
+    </Box>
+  );
+}
+
+export default function Page({
+  title,
+  subtitle,
+  actions,
+  children,
+}: PageProps) {
+  return (
+    <div>
+      <PageHeader title={title} subtitle={subtitle} actions={actions} />
+      <div>{children}</div>
+    </div>
+  );
+}

@@ -1,0 +1,33 @@
+{
+  "name": "wolf-blocks",
+  "version": "1.0.0",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "wp-scripts build --blocks-manifest",
+    "format": "wp-scripts format",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "packages-update": "wp-scripts packages-update",
+    "plugin-zip": "wp-scripts plugin-zip",
+    "start": "wp-scripts start --blocks-manifest",
+    "admin:start": "wp-scripts start src/admin/index.js --output-path=build/admin",
+    "admin:build": "wp-scripts build src/admin/index.js --output-path=build/admin"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^7.3.9",
+    "@mui/x-data-grid": "^8.27.5",
+    "@wordpress/block-editor": "latest",
+    "@wordpress/blocks": "latest",
+    "@wordpress/i18n": "latest",
+    "@wordpress/server-side-render": "^6.17.0",
+    "papaparse": "^5.5.3",
+    "react-grid-layout": "^2.2.2",
+    "react-router": "^7.13.1",
+    "zustand": "^5.0.12"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^31.6.0"
+  }
+}

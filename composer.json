@@ -1,0 +1,14 @@
+{
+    "name": "wolf/memberships",
+    "autoload": {
+        "psr-4": {
+            "Wolf\\Memberships\\": "inc/"
+        }
+    },
+    "authors": [
+        {
+            "name": "phabi1"
+        }
+    ],
+    "require": {}
+}

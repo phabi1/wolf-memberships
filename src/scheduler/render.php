@@ -30,7 +30,11 @@ $lessons = $lessonRepository->find(['campaign_id' => ['eq' => 1]]);
 
 $days = [];
 foreach ($lessons as $lesson) {
-	$days[$lesson['day']][] = $lesson;
+	$days[$lesson->day][] = [
+		'title' => $lesson->title,
+		'lesson_start' => date('H:i', $lesson->lesson_start),
+		'lesson_end' => date('H:i', $lesson->lesson_end),
+	];
 }
 
 ksort($days);
@@ -49,6 +53,7 @@ ksort($days);
 					foreach ($lessonsDay as $lesson) {
 						?>
 						<div class="scheduler-lesson-title"><?= $lesson['title']; ?> </div>
+						<div class="scheduler-lesson-time"><?= $lesson['lesson_start']; ?> - <?= $lesson['lesson_end']; ?> </div>
 						<?php
 					}
 					?>

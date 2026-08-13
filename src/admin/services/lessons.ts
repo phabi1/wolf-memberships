@@ -84,6 +84,26 @@ class LessonService {
     });
   }
 
+  async count(campaignId: string, filters?: Record<string, string>) {
+    const queryParams = new URLSearchParams({
+      size: "1",
+    });
+    if (filters) {
+      let filtersArr: string[] = [];
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) {
+          filtersArr.push(`${key}:like:${value}`);
+        }
+      });
+      queryParams.append("filters", filtersArr.join(";"));
+    }
+    const res = await fetch(
+      `${this.endpoint}/${campaignId}/lessons?${queryParams.toString()}`,
+    );
+    const data = await res.json();
+    return data.total;
+  }
+
   private serialize(data: any) {
     return {
       ...data,

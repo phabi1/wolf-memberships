@@ -1,5 +1,5 @@
 import LinearProgress from "@mui/material/LinearProgress";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import DashboardWidgetCard from "../WidgetCard";
 
 interface Lesson {
@@ -13,6 +13,11 @@ interface Lesson {
 export default function DashboardWidgetLessonsCompletude({ settings }: any) {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const empty = useMemo(() => {
+    if (loading) return false;
+    return lessons.length === 0;
+  }, [lessons, loading]);
 
   useEffect(() => {
     fetch(
@@ -37,17 +42,19 @@ export default function DashboardWidgetLessonsCompletude({ settings }: any) {
   return (
     <DashboardWidgetCard title="Lessons Completude">
       {loading ? <p>Loading...</p> : null}
-      <ul>
-        {lessons.map((lesson) => (
-          <li key={lesson.id}>
-            {lesson.title}{" "}
-            <span style={{ fontSize: "0.8em", color: "#666" }}>
-              ({lesson.total}/{lesson.max_participants})
-            </span>
-            <LinearProgress variant="determinate" value={lesson.completude} />
-          </li>
-        ))}
-      </ul>
+      {empty ? <p>No lessons available</p> : (
+        <ul>
+          {lessons.map((lesson) => (
+            <li key={lesson.id}>
+              {lesson.title}{" "}
+              <span style={{ fontSize: "0.8em", color: "#666" }}>
+                ({lesson.total}/{lesson.max_participants})
+              </span>
+              <LinearProgress variant="determinate" value={lesson.completude} />
+            </li>
+          ))}
+        </ul>
+      )}
     </DashboardWidgetCard>
   );
 }

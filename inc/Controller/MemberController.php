@@ -49,6 +49,21 @@ class MemberController extends EntityController
         ];
     }
 
+    public function generateHashAction($request)
+    {
+        $memberHelper = $this->getService('wolf-memberships.helper.member');
+        $entityManager = $this->getService('wolf.entity.manager');
+        $memberRepository = $entityManager->getRepository('wolf-memberships.member');
+        $members = $memberRepository->find();
+
+        foreach ($members as $member) {
+            $hash = $memberHelper->generateHash($member->firstname, $member->lastname, $member->birthdate);
+            $memberRepository->update($member->id, [
+                'hash' => $hash
+            ]);
+        }
+    }
+
     public function importAction($request)
     {
         $files = $request->get_file_params();

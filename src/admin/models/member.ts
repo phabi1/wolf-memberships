@@ -4,4 +4,6 @@ export type Member = {
   lastname: string;
   birthdate: string;
   license_number?: string;
+  avatar_url?: string;
+  gender?: "male" | "female";
 };

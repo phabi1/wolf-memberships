@@ -6,7 +6,7 @@ use Wolf\Core\Entity\EntityRepository;
 
 class MemberEntityRepository extends EntityRepository
 {
-    public function existsHash($hash)
+    public function existsHash(string $hash): int|null
     {
         $query = $this->db->createQuery();
         $query->select('id')
@@ -14,6 +14,7 @@ class MemberEntityRepository extends EntityRepository
             ->where(
                 $this->db->expr()->eq('hash', $hash)
             );
-        return $this->db->value();
+        $res = $this->db->value($query);
+        return $res !== null ? (int) $res : null;
     }
 }

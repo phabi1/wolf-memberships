@@ -16,6 +16,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.11",
     "@mui/material": "^7.3.9",
     "@mui/x-data-grid": "^8.27.5",
     "@wordpress/block-editor": "latest",
@@ -23,7 +24,9 @@
     "@wordpress/i18n": "latest",
     "@wordpress/server-side-render": "^6.17.0",
     "papaparse": "^5.5.3",
+    "react-beautiful-dnd": "^13.1.1",
     "react-grid-layout": "^2.2.2",
+    "react-hook-form": "^7.77.0",
     "react-router": "^7.13.1",
     "zustand": "^5.0.12"
   },

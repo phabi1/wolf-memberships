@@ -34,6 +34,7 @@ class ExistsMemberUseCase implements UseCaseInterface
         }
 
         $hash = $this->memberHelper->generateHash($lastname, $firstname, $birthdate);
+
         return $this->memberRepository->existsHash($hash);
     }
 }

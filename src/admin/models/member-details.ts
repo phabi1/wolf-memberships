@@ -4,12 +4,8 @@ export type MemberDetails = {
   lastname: string;
   birthdate: string;
   license_number?: string;
-  contacts: {
-    firstname: string;
-    lastname: string;
-    phone: string;
-    owner: boolean;
-  }[];
+  avatar_url?: string;
+  gender?: "male" | "female";
   wheels: {
     id: number;
     assigned_at: string;

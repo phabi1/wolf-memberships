@@ -7,15 +7,12 @@ Description: This is not just a plugin, it symbolizes the hope and enthusiasm of
 Author: Phabi1
 Version: 0.0.1
 Author URI: http://www.rollerlesloups.fr/
-Requires plugins: wolf-checkout,wolf
+Requires plugins: wolf-billing,wolf
 */
 
 require __DIR__ . '/vendor/autoload.php';
 
+define( 'WOLF_MEMBERSHIP_PLUGIN_DIR', plugin_dir_path(__FILE__));
+
 $plugin = new \Wolf\Memberships\Plugin();
 $plugin->run();
-
-function wolf_memberships_init() {
-	wp_register_block_types_from_metadata_collection( __DIR__ . '/build', __DIR__ . '/build/blocks-manifest.php' );
-}
-add_action( 'init', 'wolf_memberships_init' );

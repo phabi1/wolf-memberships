@@ -16,9 +16,12 @@ export default function DashboardWidgetPrintPeriods({ settings }: any) {
 
   const handlePrint = useCallback(() => {
     if (!canPrint) return;
-    fetch(
-      `/wp-json/wolf-memberships/v1/campaign/1/lessons/print?campaign_id=1&period_id=${selectedPeriod}`,
-    )
+
+    const campaignId = settings.campaignId;
+
+    fetch(`/wp-json/wolf-memberships/v1/campaigns/${campaignId}/periods/${selectedPeriod}/print`, {
+      method: "POST",
+    })
       .then((res) => res.blob())
       .then((blob) => {
         const url = window.URL.createObjectURL(blob);
@@ -33,7 +36,7 @@ export default function DashboardWidgetPrintPeriods({ settings }: any) {
   useEffect(() => {
     fetch(
       "/wp-json/wolf-memberships/v1/dashboard/source?type=get_periods_for_print&campaign_id=" +
-        settings.campaignId,
+      settings.campaignId,
     )
       .then((res) => res.json())
       .then((data) => {

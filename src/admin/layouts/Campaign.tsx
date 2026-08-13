@@ -41,7 +41,7 @@ export default function LayoutCampaign() {
             <ListItem component={Link} to={`/campaign/${campaignId}`}>
               <ListItemText primary="Dashboard" />
             </ListItem>
-            <ListItem component={Link} to={`/campaign/${campaignId}/members`}>
+            <ListItem component={Link} to={`/campaign/${campaignId}/subscriptions`}>
               <ListItemText primary="Members" />
             </ListItem>
             <ListItem component={Link} to={`/campaign/${campaignId}/lessons`}>

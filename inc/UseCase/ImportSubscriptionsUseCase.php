@@ -3,12 +3,16 @@
 namespace Wolf\Memberships\UseCase;
 
 use Wolf\Core\Entity\EntityManager;
+use Wolf\Core\Helper\DateHelper;
 use Wolf\Core\UseCase\UseCaseInterface;
 use Wolf\Memberships\Helper\MemberHelper;
+use Wolf\Memberships\Model\LicenseType;
 
 class ImportSubscriptionsUseCase implements UseCaseInterface
 {
     private $subscriptionRepository;
+
+    private $contactRepository;
 
     private $memberRepository;
 
@@ -16,12 +20,16 @@ class ImportSubscriptionsUseCase implements UseCaseInterface
 
     private $memberHelper;
 
-    public function __construct(EntityManager $entityManager, MemberHelper $memberHelper)
+    private $dateHelper;
+
+    public function __construct(EntityManager $entityManager, MemberHelper $memberHelper, DateHelper $dateHelper)
     {
         $this->memberRepository = $entityManager->getRepository('wolf-memberships.member');
         $this->subscriptionRepository = $entityManager->getRepository('wolf-memberships.subscription');
+        $this->contactRepository = $entityManager->getRepository('wolf-memberships.contact');
         $this->sessionRepository = $entityManager->getRepository('wolf-memberships.session');
         $this->memberHelper = $memberHelper;
+        $this->dateHelper = $dateHelper;
     }
 
     public function execute(array $params = [])
@@ -46,14 +54,28 @@ class ImportSubscriptionsUseCase implements UseCaseInterface
             'skipped' => 0,
         ];
 
-        $header = fgetcsv($handle);
-        while (($row = fgetcsv($handle)) !== false) {
-            $data = array_combine($header, $row);
+        $separator = isset($params['separator']) ? $params['separator'] : ',';
 
-            if ($data['choice1'] === '0' && $data['choice2'] === '0') {
-                $log['skipped']++;
-                continue; // Skip if no subscription choice is made
-            }
+        $fields = isset($params['fields']) ? $params['fields'] : [
+            'subscribed_at' => 'Date de la commande',
+            'firstName' => 'Prénom adhérent',
+            'lastName' => 'Nom adhérent',
+            'birthdate' => 'Date de naissance de l\'adhérent',
+            'lesson' => 'Tarif',
+            'license_type' => 'Type de licence',
+            'licence' => 'Numéro de licence',
+            'legal_guardian_lastName_1' => 'Nom du tuteur légal 1 (obligatoire si adhérent mineur)',
+            'legal_guardian_firstName_1' => 'Prénom du tuteur légal 1 (obligatoire si adhérent mineur)',
+            'legal_guardian_phone_1' => 'Téléphone du tuteur légal 1 (obligatoire si adhérent mineur)',
+            'legal_guardian_lastName_2' => 'Nom du tuteur légal 2 (obligatoire si adhérent mineur)',
+            'legal_guardian_firstName_2' => 'Prénom du tuteur légal 2 (obligatoire si adhérent mineur)',
+            'legal_guardian_phone_2' => 'Téléphone du tuteur légal 2 (obligatoire si adhérent mineur)',
+        ];
+
+        $header = fgetcsv($handle, 0, $separator);
+        while (($row = fgetcsv($handle, 0, $separator)) !== false) {
+            // Transform the row into an associative array using the header
+            $data = $this->transformRowWithHeader($fields, $header, $row);
 
             $birthdate = $this->extractBirthdate($data);
             $hash = $this->memberHelper->generateHash($data['firstName'], $data['lastName'], $birthdate);
@@ -67,11 +89,6 @@ class ImportSubscriptionsUseCase implements UseCaseInterface
                 $member = $this->createMember($data);
             }
 
-            if ($data['registration'] === '1') {
-                $log['skipped']++;
-                continue;
-            }
-
             $existingSubscription = $this->subscriptionRepository->findOne([
                 'member_id' => ['eq' => $member->id],
                 'campaign_id' => ['eq' => $campaignId],
@@ -82,22 +99,42 @@ class ImportSubscriptionsUseCase implements UseCaseInterface
                 continue;
             }
 
+            if (!isset($data['license_type']) || !LicenseType::isValidType($data['license_type'])) {
+                $log['skipped']++;
+                continue;
+            }
+
+            $subscribedAt = null;
+            try {
+                $subscribedAt = isset($data['subscribed_at']) && !empty($data['subscribed_at'])
+                    ? $this->dateHelper->convertToTimestamp($data['subscribed_at'], DateHelper::FORMAT_DMYHI)
+                    : time();
+            } catch (\Exception $e) {
+                $subscribedAt = time();
+            }
+
             $subscription = $this->subscriptionRepository->insert([
+                'subscribed_at' => $subscribedAt,
+                'license_type' => $data['license_type'] ?? null,
                 'member_id' => $member->id,
                 'campaign_id' => $campaignId,
             ]);
 
-            if (!empty($data['choice1'])) {
-                $this->sessionRepository->insert([
-                    'lesson_id' => $data['choice1'], // Assuming lesson_id 1 for choice1
+            $contactData = $this->extractContacts($data);
+            foreach ($contactData as $contact) {
+                $this->contactRepository->insert([
+                    'firstname' => $contact['firstName'],
+                    'lastname' => $contact['lastName'],
+                    'phone' => $contact['phone'] ?? null,
+                    'email' => $contact['email'] ?? null,
                     'subscription_id' => $subscription->id,
-                    'member_id' => $member->id,
-                    'campaign_id' => $campaignId,
                 ]);
             }
-            if (!empty($data['choice2'])) {
+
+
+            if (!empty($data['lesson'])) {
                 $this->sessionRepository->insert([
-                    'lesson_id' => $data['choice2'], // Assuming lesson_id 1 for choice1 and 2 for choice2
+                    'lesson_id' => $data['lesson'],
                     'subscription_id' => $subscription->id,
                     'member_id' => $member->id,
                     'campaign_id' => $campaignId,
@@ -111,6 +148,45 @@ class ImportSubscriptionsUseCase implements UseCaseInterface
     }
 
     /**
+     * Extracts contact information from the data array.
+     * @param array $data
+     * @return array
+     */
+    private function extractContacts(array $data): array
+    {
+        $contacts = [];
+        for ($i = 1; $i <= 2; $i++) {
+            if (!empty($data["legal_guardian_lastName_$i"]) && !empty($data["legal_guardian_firstName_$i"])) {
+                $contacts[] = [
+                    'lastName' => $data["legal_guardian_lastName_$i"],
+                    'firstName' => $data["legal_guardian_firstName_$i"],
+                    'phone' => $data["legal_guardian_phone_$i"] ?? null,
+                    'email' => $data["legal_guardian_email_$i"] ?? null,
+                ];
+            }
+        }
+        return $contacts;
+    }
+
+    /**
+     * Transforms a CSV row into an associative array using the provided header mapping.
+     * @param array $fields
+     * @param array $row
+     * @return array
+     */
+    private function transformRowWithHeader(array $fields, array $header, array $row)
+    {
+        $data = [];
+        $values = array_combine($header, $row);
+        foreach ($fields as $key => $fieldName) {
+            if (isset($values[$fieldName])) {
+                $data[$key] = $values[$fieldName];
+            }
+        }
+        return $data;
+    }
+
+    /**
      * Creates a new member in the database.
      * @param array $data
      */
@@ -119,10 +195,10 @@ class ImportSubscriptionsUseCase implements UseCaseInterface
         $birthdate = $this->extractBirthdate($data);
         $hash = $this->memberHelper->generateHash($data['firstName'], $data['lastName'], $birthdate);
 
-        return $this->memberRepository->create([
+        return $this->memberRepository->insert([
             'firstname' => $data['firstName'],
             'lastname' => $data['lastName'],
-            'birthdate' => date('Y-m-d', $birthdate),
+            'birthdate' => $birthdate,
             'license_number' => $this->isValidLicenseNumber($data['licence'] ?? null) ? $data['licence'] : null,
             'hash' => $hash
         ]);
@@ -153,18 +229,27 @@ class ImportSubscriptionsUseCase implements UseCaseInterface
         return $this->memberRepository->update($member->id, $updateData);
     }
 
-    private function isValidLicenseNumber($licenseNumber)
+    /**
+     * Validates the license number.
+     * @param string|null $licenseNumber
+     * @return bool
+     */
+    private function isValidLicenseNumber(?string $licenseNumber): bool
     {
+        if ($licenseNumber === null) {
+            return false;
+        }
         // Implement your validation logic here (e.g., regex check)
         return preg_match('/^[0-9]+$/', $licenseNumber);
     }
 
-    private function extractBirthdate(array &$data)
+    private function extractBirthdate(array &$data): ?int
     {
-        $year = $data['yearBirthday'] ?? null;
-        $month = $data['monthBirthday'] ?? null;
-        $day = $data['dayBirthday'] ?? null;
-
-        return strtotime("$year-$month-$day");
+        if (isset($data['birthdate'])) {
+            list($day, $month, $year) = explode('/', $data['birthdate']);
+            $birthdate = strtotime("$year-$month-$day");
+            return $birthdate;
+        }
+        return null;
     }
 }

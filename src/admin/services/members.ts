@@ -45,12 +45,10 @@ class MemberService {
     const data = await res.json();
     const entity = this.unserialize(data);
 
-    const [contacts, wheels] = await Promise.all([
-      this.fetchContacts(memberId),
+    const [wheels] = await Promise.all([
       this.fetchWheels(memberId),
     ]);
 
-    entity.contacts = contacts;
     entity.wheels = wheels;
 
     return entity;
@@ -86,7 +84,7 @@ class MemberService {
     });
   }
 
-    async exists(data: {
+  async exists(data: {
     firstname: string;
     lastname: string;
     birthdate: Date;
@@ -99,7 +97,7 @@ class MemberService {
       body: JSON.stringify({
         firstname: data.firstname,
         lastname: data.lastname,
-        birthdate: Math.floor(data.birthdate.getTime() / 1000),
+        birthdate: this.convertDateToTimestamp(data.birthdate),
       }),
     });
     const resData = await res.json();
@@ -109,31 +107,31 @@ class MemberService {
     };
   }
 
-  private async fetchContacts(memberId: string) {
-    const res = await fetch(`${this.endpoint}/${memberId}/contacts`);
-    const data = await res.json();
-    return data.items;
-  }
-
   private async fetchWheels(memberId: string) {
     const res = await fetch(`${this.endpoint}/${memberId}/wheels`);
     const data = await res.json();
     return data.items;
   }
 
+  /**
+   * Convert a Date object to a UTC timestamp (in seconds) for API compatibility.
+   */
+  private convertDateToTimestamp(date: Date | null): number | null {
+    if (!date) return null;
+    return Math.floor(date.getTime() / 1000) - (60);
+  }
+
   private serialize(data: any) {
     return {
       ...data,
-      birthdate: data.birthdate
-        ? Math.floor(data.birthdate.getTime() / 1000)
-        : null,
+      birthdate: this.convertDateToTimestamp(data.birthdate),
     };
   }
 
   private unserialize(data: any) {
     return {
       ...data,
-      birthdate: data.birthdate ? new Date(data.birthdate * 1000) : null,
+      birthdate: data.birthdate ? new Date((data.birthdate + 60) * 1000) : null,
     };
   }
 }

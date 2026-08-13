@@ -8,7 +8,9 @@ import DataGrid from "../../components/ui/Datagrid";
 import Page from "../../components/ui/Page";
 import { DataGridColumn } from "../../components/ui/datagrid/models/column";
 import { Subscription } from "../../models/subscription";
-import SubscriptionService from "../../services/subscription";
+import SubscriptionService from "../../services/subscriptions";
+import Avatar from "@mui/material/Avatar";
+import { MemberAvatar } from "../../components/ui/Avatar";
 
 type State = {
   loading: boolean;
@@ -24,25 +26,25 @@ type State = {
 
 type Action =
   | {
-      type: "fetchItems";
-      payload: { items: Subscription[]; total: number };
-    }
+    type: "fetchItems";
+    payload: { items: Subscription[]; total: number };
+  }
   | {
-      type: "setLoading";
-      payload: boolean;
-    }
+    type: "setLoading";
+    payload: boolean;
+  }
   | {
-      type: "setFilters";
-      payload: Record<string, string>;
-    }
+    type: "setFilters";
+    payload: Record<string, string>;
+  }
   | {
-      type: "setPagination";
-      payload: { page: number; size: number };
-    }
+    type: "setPagination";
+    payload: { page: number; size: number };
+  }
   | {
-      type: "setSelection";
-      payload: { id: number; title: string }[];
-    };
+    type: "setSelection";
+    payload: { id: number; title: string }[];
+  };
 
 export default function MemberListPage() {
   const { campaignId } = useParams();
@@ -52,8 +54,18 @@ export default function MemberListPage() {
     {
       name: "add",
       label: "Add Member",
-      handler: () => navigate(`/campaign/${campaignId}/members/new`),
+      handler: () => navigate(`/campaign/${campaignId}/subscriptions/new`),
     },
+    {
+      name: "import",
+      label: "Import Members",
+      handler: () => navigate(`/campaign/${campaignId}/subscriptions/import`),
+    },
+    {
+      name: "export",
+      label: "Export Members",
+      handler: () => navigate(`/campaign/${campaignId}/subscriptions/export`),
+    }
   ];
 
   const [state, dispatch] = useReducer(
@@ -103,6 +115,10 @@ export default function MemberListPage() {
 
   const columns: DataGridColumn<Subscription>[] = [
     { name: "id", header: "ID", width: 70, type: "number" },
+    { name: "avatar", header: "Avatar", width: 100, type: "custom", data: "member.avatar_url", renderCell: (value: any, row: Subscription) => {
+        return <MemberAvatar url={row.member.avatar_url} gender={row.member.gender} />;
+      },
+    },
     {
       name: "firstname",
       header: "First Name",
@@ -128,13 +144,25 @@ export default function MemberListPage() {
         return date.toLocaleDateString();
       },
     },
+    {
+      name: "license_number",
+      header: "License Number",
+      type: "text",
+      data: "member.license_number",
+    },
+    {
+      name: "license_type",
+      header: "License Type",
+      type: "text",
+      data: "member.license_type",
+    },
   ];
 
   const rowActions = [
     {
       name: "edit",
       label: "Edit",
-      handler: (row: Subscription) => navigate(`/campaign/${campaignId}/members/${row.id}/edit`),
+      handler: (row: Subscription) => navigate(`/campaign/${campaignId}/subscriptions/${row.id}/edit`),
     },
   ];
 

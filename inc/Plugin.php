@@ -17,5 +17,12 @@ class Plugin
 
         $api = new Api();
         $api->setup();
+
+        $this->registerBlocks();
+    }
+
+    private function registerBlocks()
+    {
+        wp_register_block_types_from_metadata_collection(WOLF_MEMBERSHIP_PLUGIN_DIR . '/build', WOLF_MEMBERSHIP_PLUGIN_DIR . '/build/blocks-manifest.php');
     }
 }

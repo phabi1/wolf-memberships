@@ -70,7 +70,7 @@ class ImportMembersUseCase implements UseCaseInterface
         $birthdate = $this->extractBirthdate($data);
         $hash = $this->memberHelper->generateHash($data['firstName'], $data['lastName'], $birthdate);
 
-        $this->memberRepository->create([
+        $this->memberRepository->insert([
             'firstname' => $data['firstName'],
             'lastname' => $data['lastName'],
             'birthdate' => date('Y-m-d', $birthdate),

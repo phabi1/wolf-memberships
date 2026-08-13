@@ -68,16 +68,11 @@ return [
             'lastname' => ['type' => Field::TYPE_STRING, 'required' => true],
             'birthdate' => ['type' => Field::TYPE_DATE, 'required' => true],
             'license_number' => ['type' => Field::TYPE_STRING],
+            'gender' => ['type' => Field::TYPE_STRING, 'nullable' => true],
+            'avatar_url' => ['type' => Field::TYPE_STRING, 'nullable' => true],
             'hash' => ['type' => Field::TYPE_STRING]
         ],
         'relations' => [
-            'contacts' => [
-                'type' => Relation::TYPE_ONE_TO_MANY,
-                'target_entity' => 'wolf-memberships.contact',
-                'options' => [
-                    'join_field' => 'member_id'
-                ]
-            ],
             'subscriptions' => [
                 'type' => Relation::TYPE_ONE_TO_MANY,
                 'target_entity' => 'wolf-memberships.subscription',
@@ -101,14 +96,14 @@ return [
             'firstname' => ['type' => Field::TYPE_STRING, 'required' => true],
             'lastname' => ['type' => Field::TYPE_STRING, 'required' => true],
             'phone' => ['type' => Field::TYPE_STRING, 'nullable' => true],
-            "member_id" => ['type' => Field::TYPE_INTEGER, 'required' => true],
+            "subscription_id" => ['type' => Field::TYPE_INTEGER, 'required' => true],
         ],
         'relations' => [
-            'member' => [
+            'subscription' => [
                 'type' => Relation::TYPE_ONE_TO_ONE,
-                'target_entity' => 'wolf-memberships.member',
+                'target_entity' => 'wolf-memberships.subscription',
                 'options' => [
-                    'join_field' => 'member_id'
+                    'join_field' => 'subscription_id'
                 ]
             ]
         ]   
@@ -117,6 +112,7 @@ return [
         'table' => 'wolf_memberships_subscription',
         'fields' => [
             'id' => ['type' => Field::TYPE_INTEGER],
+            'license_type' => ['type' => Field::TYPE_STRING, 'required' => true],
             'subscribed_at' => ['type' => Field::TYPE_DATETIME, 'required' => true],
             'campaign_id' => ['type' => Field::TYPE_INTEGER, 'required' => true],
             'member_id' => ['type' => Field::TYPE_INTEGER, 'required' => true],
@@ -134,6 +130,20 @@ return [
                 'target_entity' => 'wolf-memberships.member',
                 'options' => [
                     'join_field' => 'member_id'
+                ]
+            ],
+            "contacts" => [
+                'type' => Relation::TYPE_ONE_TO_MANY,
+                'target_entity' => 'wolf-memberships.contact',
+                'options' => [
+                    'join_field' => 'subscription_id'
+                ]
+            ],
+            "sessions" => [
+                'type' => Relation::TYPE_ONE_TO_MANY,
+                'target_entity' => 'wolf-memberships.session',
+                'options' => [
+                    'join_field' => 'subscription_id'
                 ]
             ]
         ]

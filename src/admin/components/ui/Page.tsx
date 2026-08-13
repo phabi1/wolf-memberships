@@ -13,6 +13,7 @@ export type PageProps = PropsWithChildren<{
   title: string;
   subtitle?: string;
   actions?: Action[];
+  topAction?: React.ReactNode;
 }>;
 
 function PageActions({ actions }: { actions: Action[] }) {
@@ -56,6 +57,7 @@ function PageHeader({
   title,
   subtitle,
   actions,
+  topAction,
 }: {
   title: string;
   subtitle?: string;
@@ -84,10 +86,12 @@ export default function Page({
   title,
   subtitle,
   actions,
+  topAction,
   children,
 }: PageProps) {
   return (
     <div>
+      {topAction && <div>{topAction}</div>}
       <PageHeader title={title} subtitle={subtitle} actions={actions} />
       <div>{children}</div>
     </div>

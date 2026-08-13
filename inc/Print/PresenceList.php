@@ -10,6 +10,8 @@ class PresenceList
 
     protected $headers = [];
 
+    private $period;
+
     private $lessons = [];
 
     private $members = [];
@@ -38,34 +40,6 @@ class PresenceList
             [
                 'data' => 'phone',
                 'label' => 'Téléphone'
-            ],
-            [
-                'label' => '',
-                'width' => 7
-            ],
-            [
-                'label' => '',
-                'width' => 7
-            ],
-            [
-                'label' => '',
-                'width' => 7
-            ],
-            [
-                'label' => '',
-                'width' => 7
-            ],
-            [
-                'label' => '',
-                'width' => 7
-            ],
-            [
-                'label' => '',
-                'width' => 7
-            ],
-            [
-                'label' => '',
-                'width' => 7
             ],
             [
                 'label' => 'Inscription'
@@ -97,49 +71,111 @@ class PresenceList
         return $this;
     }
 
+    public function setPeriod($period)
+    {
+        $this->period = $period;
+        return $this;
+    }
+
     public function render()
     {
         $pdf = new Fpdf();
 
         foreach ($this->lessons as $lesson) {
-            $pdf->AddPage();
-            $pdf->SetFont('Arial', 'B', 16);
-            $pdf->Cell(0, 10, $this->decodeString($lesson->title), 0, 1, 'C');
+
+            if (count($this->members[$lesson->id] ?? []) === 0) {
+                continue;
+            }
+
+            $pdf->AddPage('L', 'A4');
+
+            $headers = $this->buildHeaders($lesson);
+
+            $this->renderHeader($pdf, $lesson);
+
             $pdf->Ln(10);
 
-            $this->renderHeader($pdf);
 
-            $pdf->Ln(10);
-
-            $this->renderMembers($pdf, $this->members[$lesson->id] ?? []);
+            $this->renderMembers($pdf, $headers, $this->members[$lesson->id] ?? []);
         }
 
         return $pdf->Output('I', '', true);
     }
 
-    private function renderHeader(Fpdf $pdf)
+
+    private function buildHeaders($lesson)
     {
+        $headers = $this->headers;
+
+        // Count days into period
+        $periodStart = $this->period->start_date;
+        $periodEnd = $this->period->end_date;
+
+        $day = $lesson->day;
+
+        $days = [];
+        $currentDate = $periodStart;
+        while ($currentDate <= $periodEnd) {
+            if (date('N', $currentDate) == $day) {
+                $days[] = $currentDate;
+            }
+            $currentDate = strtotime('+1 day', $currentDate);
+        }
+
+        $delimiter = 'phone';
+        $delimiterIndex = array_search($delimiter, array_column($headers, 'data'));
+
+        $firstPart = array_slice($headers, 0, $delimiterIndex + 1);
+        $lastPart = array_slice($headers, $delimiterIndex + 1);
+
+        $dayHeaders = array_map(function ($date) {
+            return [
+                'label' => date('d/m', $date),
+                'width' => 10
+            ];
+        }, $days);
+
+        return array_merge($firstPart, $dayHeaders, $lastPart);
+
+    }
+    private function renderHeader(Fpdf $pdf, $lesson)
+    {
+        $y = $pdf->GetY();
+
+        $pdf->SetFont('Arial', 'B', 16);
+        $pdf->Cell(0, 10, $this->decodeString($lesson->title), 0, 1, 'C');
+        $pdf->Ln(1);
+
+        $subTitle = '' . $this->getDay($lesson->day) . ' - ' . date('H:i', $lesson->lesson_start) . ' à ' . date('H:i', $lesson->lesson_end);
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(0, 10, $this->decodeString($subTitle), 0, 1, 'C');
+        $pdf->Ln(1);
+
+        $y = $pdf->GetY();
+
         $pdf->SetLineWidth(0.1);
         $pdf->SetFontSize(8);
-        $pdf->Rect(10, 20, 30, 10);
-        $pdf->Text(10, 35, $this->decodeString('Presences'));
-        $pdf->Rect(50, 20, 150, 10);
-        $pdf->Text(50, 35, $this->decodeString('Professor'));
+        $pdf->Rect(10, $y, 30, 10);
+        $pdf->Text(10, $y + 15, $this->decodeString('Presences'));
+        $pdf->Rect(50, $y, 150, 10);
+        $pdf->Text(50, $y + 15, $this->decodeString('Professor'));
         $pdf->SetLineWidth(0);
+
+        $pdf->Ln(15);
     }
 
-    private function renderMembers(Fpdf $pdf, $members)
+    private function renderMembers(Fpdf $pdf, $headers, $members)
     {
-        foreach ($this->headers as $index => $header) {
+        foreach ($headers as $index => $header) {
             $pdf->Cell($header['width'] ?? 30, 10, $this->decodeString($header['label']), 1, 0, 'C');
         }
         $pdf->Ln();
 
-        $rows = $this->transformMembersToRows($members, $this->headers);
+        $rows = $this->transformMembersToRows($members, $headers);
 
         foreach ($rows as $row) {
             foreach ($row as $cell) {
-                $pdf->Cell($cell['width'], 10, $cell['label'], 1, 0, 'C');
+                $pdf->Cell($cell['width'], 7, $cell['label'], 1, 0, 'C');
             }
             $pdf->Ln();
         }
@@ -181,6 +217,20 @@ class PresenceList
             $index++;
         }
         return $rows;
+    }
+
+    private function getDay($day)
+    {
+        $days = [
+            1 => 'Lundi',
+            2 => 'Mardi',
+            3 => 'Mercredi',
+            4 => 'Jeudi',
+            5 => 'Vendredi',
+            6 => 'Samedi',
+            7 => 'Dimanche'
+        ];
+        return $days[$day] ?? '';
     }
 
     private function decodeString($string)

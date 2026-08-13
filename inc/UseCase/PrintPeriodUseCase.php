@@ -56,6 +56,10 @@ class PrintPeriodUseCase implements UseCaseInterface
             return $session->member_id;
         }, $sessions));
 
+        $subscriptionIds = array_unique(array_map(function ($session) {
+            return $session->subscription_id;
+        }, $sessions));
+
         $members = array_reduce($this->memberRepository->find([
             'id' => [
                 'in' => $memberIds
@@ -66,14 +70,14 @@ class PrintPeriodUseCase implements UseCaseInterface
         }, []);
 
         $contacts = $this->contactRepository->find([
-            'member_id' => [
-                'in' => $memberIds
+            'subscription_id' => [
+                'in' => $subscriptionIds
             ],
         ]);
 
         foreach ($contacts as $contact) {
-            if (isset($members[$contact->member_id])) {
-                $members[$contact->member_id]->phone = $contact->phone;
+            if (isset($members[$contact->subscription_id])) {
+                $members[$contact->subscription_id]->phone = $contact->phone;
             }
         }
 
@@ -95,9 +99,9 @@ class PrintPeriodUseCase implements UseCaseInterface
         }
 
         $pdf = new PresenceList();
+        $pdf->setPeriod($period);
         $pdf->setLessons($lessons);
         $pdf->setMembers($membersByLessons);
-
 
         $pdfContent = $pdf->render();
         return [

@@ -22,6 +22,9 @@ return [
             '@wolf.use_case_bus'
         ]
     ],
+        'wolf-memberships.controller.session' => [
+        'class' => \Wolf\Memberships\Controller\SessionController::class
+    ],
     'wolf-memberships.controller.lesson' => [
         'class' => \Wolf\Memberships\Controller\LessonController::class,
         'arguments' => [
@@ -118,12 +121,26 @@ return [
         'class' => \Wolf\Memberships\UseCase\ImportSubscriptionsUseCase::class,
         'arguments' => [
             '@wolf.entity.manager',
-            '@wolf-memberships.helper.member'
+            '@wolf-memberships.helper.member',
+            '@wolf.helper.date'
         ],
         'tags' => [
             [
                 'name' => 'use_case',
                 'value' => 'wolf-memberships.import_subscriptions'
+            ]
+        ]
+    ],
+    'wolf-memberships.use_case.export_subscriptions' => [
+        'class' => \Wolf\Memberships\UseCase\ExportSubscriptionsUseCase::class,
+        'arguments' => [
+            '@wolf.entity.manager',
+            '@wolf-memberships.helper.member'
+        ],
+        'tags' => [
+            [
+                'name' => 'use_case',
+                'value' => 'wolf-memberships.export_subscriptions'
             ]
         ]
     ],

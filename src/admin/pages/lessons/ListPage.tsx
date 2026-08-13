@@ -9,7 +9,7 @@ import TableRow from "@mui/material/TableRow";
 import { useEffect, useMemo, useState } from "react";
 import { Outlet, useNavigate, useParams } from "react-router";
 import { Lesson } from "../../models/lesson";
-import LessonService from "../../services/lesson";
+import LessonService from "../../services/lessons";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 

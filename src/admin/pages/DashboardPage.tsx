@@ -3,6 +3,7 @@ import ReactGridLayout, {
   useContainerWidth,
   verticalCompactor,
 } from "react-grid-layout";
+import "react-grid-layout/css/styles.css";
 import DashboardWidgetOutlet from "../components/dashboard/WidgetOutlet";
 import { useParams } from "react-router";
 
@@ -12,18 +13,45 @@ export default function DashboardPage() {
   const { width, containerRef, mounted } = useContainerWidth();
   const [layout] = useState<any[]>([
     {
-      i: "1",
+      i: "3",
       x: 0,
       y: 0,
       w: 4,
-      h: 2,
+      h: 1,
+      type: "subscriptions-counter",
+      settings: { campaignId },
+    },
+    {
+      i: "4",
+      x: 4,
+      y: 0,
+      w: 4,
+      h: 1,
+      type: "lessons-counter",
+      settings: { campaignId },
+    },
+    {
+      i: "5",
+      x: 8,
+      y: 0,
+      w: 4,
+      h: 1,
+      type: "periods-counter",
+      settings: { campaignId },
+    },
+    {
+      i: "1",
+      x: 0,
+      y: 2,
+      w: 4,
+      h: 6,
       type: "lessons-completude",
       settings: { campaignId },
     },
     {
       i: "2",
       x: 4,
-      y: 0,
+      y: 2,
       w: 4,
       h: 2,
       type: "print-periods",
@@ -38,9 +66,9 @@ export default function DashboardPage() {
           <ReactGridLayout
             width={width}
             layout={layout}
-            gridConfig={{ cols: 12, rowHeight: 30 }}
-            dragConfig={{ enabled: true, handle: ".handle" }}
-            compactor={verticalCompactor}
+            gridConfig={{ cols: 12, rowHeight: 112, margin: [16, 16] }}
+            dragConfig={{ enabled: false, handle: ".handle" }}
+            className="layout"
           >
             {layout.map((item) => (
               <div key={item.i}>

@@ -84,6 +84,68 @@ class SubscriptionService {
     });
   }
 
+  async count(campaignId: string, filters?: Record<string, string>) {
+    const queryParams = new URLSearchParams({
+      size: "1",
+    });
+    if (filters) {
+      let filtersArr: string[] = [];
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== "") {
+          filtersArr.push(`${key}:like:${value}`);
+        }
+      });
+      queryParams.append("filters", filtersArr.join(";"));
+    }
+
+    const res = await fetch(
+      `${this.endpoint}/${campaignId}/subscriptions?${queryParams.toString()}`,
+    );
+    const data = await res.json();
+    return data.total;
+  }
+
+  async import(campaignId: string, file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch(
+      `${this.endpoint}/${campaignId}/subscriptions/import`,
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
+    const data = await res.json();
+    return data;
+  }
+
+  async export(campaignId: string) {
+    const res = await fetch(
+      `${this.endpoint}/${campaignId}/subscriptions/export`,
+      {
+        method: "GET",
+      },
+    );
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    return url;
+  }
+
+  async fetchSessions(campaignId: string, subscriptionId: string) {
+    const params = new URLSearchParams({
+      filters: "subscription_id:eq:" + subscriptionId,
+    });
+    const res = await fetch(
+      `${this.endpoint}/${campaignId}/sessions?${params.toString()}`,
+      {
+        method: "GET",
+      },
+    );
+    const data = await res.json();
+    return data.items || [];
+  }
+
   private serialize(data: any) {
     return {
       ...data,

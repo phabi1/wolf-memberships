@@ -2,9 +2,7 @@
 
 namespace Wolf\Memberships\Controller;
 
-use Wolf\Core\Mvc\Controller\EntityController;
-
-class LessonController extends EntityController
+class LessonController extends AbstractCampaignController
 {
     protected $entityName = 'wolf-memberships.lesson';
 

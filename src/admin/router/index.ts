@@ -16,18 +16,31 @@ export const router = createHashRouter([
         Component: lazy(() => import("../pages/DashboardPage.tsx")),
       },
       {
-        path: "members",
-        Component: lazy(() => import("../pages/members/ListPage.tsx")),
+        path: "subscriptions",
+        Component: lazy(() => import("../pages/subscriptions/ListPage.tsx")),
         children: [
           {
             path: "new",
-            Component: lazy(() => import("../pages/members/AddPage.tsx")),
+            Component: lazy(() => import("../pages/subscriptions/AddPage.tsx")),
+          },
+
+          {
+            path: "import",
+            Component: lazy(
+              () => import("../pages/subscriptions/ImportPage.tsx"),
+            ),
           },
           {
-            path: ":memberId/edit",
-            Component: lazy(() => import("../pages/members/EditPage.tsx")),
+            path: "export",
+            Component: lazy(
+              () => import("../pages/subscriptions/ExportPage.tsx"),
+            ),
           },
         ],
+      },
+      {
+        path: "subscriptions/:subscriptionId/edit",
+        Component: lazy(() => import("../pages/subscriptions/DetailsPage.tsx")),
       },
       {
         path: "lessons",

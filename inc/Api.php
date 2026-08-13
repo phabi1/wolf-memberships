@@ -21,6 +21,7 @@ class Api implements ContainerAwareInterface
     {
         add_action('rest_api_init', function () {
             $this->restRoutesHelper = $this->getContainer()->get('wolf.rest.routes');
+            $this->registerUploadRoute();
             $this->registerDashboardRoutes();
             $this->registerCampaignRoutes();
             $this->registerSubscriptionRoutes();
@@ -28,6 +29,7 @@ class Api implements ContainerAwareInterface
             $this->registerContactRoutes();
             $this->registerPeriodRoutes();
             $this->registerLessonRoutes();
+            $this->registerSessionRoutes();
             $this->registerWheelRoutes();
             $this->registerWheelAssignmentRoutes();
         });
@@ -44,6 +46,16 @@ class Api implements ContainerAwareInterface
     protected function getController($controllerName)
     {
         return $this->getContainer()->get($controllerName);
+    }
+
+    protected function registerUploadRoute()
+    {
+        $controller = $this->getController('wolf-memberships.controller.upload');
+        register_rest_route('wolf-memberships/v1', '/upload', [
+            'methods' => 'POST',
+            'callback' => [$controller, 'upload'],
+            'permission_callback' => '__return_true'
+        ]);
     }
 
     protected function registerDashboardRoutes()
@@ -66,8 +78,13 @@ class Api implements ContainerAwareInterface
             'permission_callback' => '__return_true'
         ]);
         register_rest_route('wolf-memberships/v1', '/members/exists', [
-            'methods' => 'GET',
+            'methods' => 'POST',
             'callback' => [$controller, 'exists'],
+            'permission_callback' => '__return_true'
+        ]);
+        register_rest_route('wolf-memberships/v1', '/members/generate-hash', [
+            'methods' => 'GET',
+            'callback' => [$controller, 'generateHash'],
             'permission_callback' => '__return_true'
         ]);
     }
@@ -85,6 +102,11 @@ class Api implements ContainerAwareInterface
         register_rest_route('wolf-memberships/v1', 'campaigns/(?P<campaign_id>[\d]+)/subscriptions/import', [
             'methods' => 'POST',
             'callback' => [$controller, 'import'],
+            'permission_callback' => '__return_true'
+        ]);
+        register_rest_route('wolf-memberships/v1', 'campaigns/(?P<campaign_id>[\d]+)/subscriptions/export', [
+            'methods' => 'GET',
+            'callback' => [$controller, 'export'],
             'permission_callback' => '__return_true'
         ]);
     }
@@ -110,6 +132,12 @@ class Api implements ContainerAwareInterface
     {
         $controller = $this->getController('wolf-memberships.controller.lesson');
         $this->restRoutesHelper->createRoutes('wolf-memberships/v1', 'campaigns/(?P<campaign_id>[\d]+)/lessons', $controller);
+    }
+
+    protected function registerSessionRoutes()
+    {
+        $controller = $this->getController('wolf-memberships.controller.session');
+        $this->restRoutesHelper->createRoutes('wolf-memberships/v1', 'campaigns/(?P<campaign_id>[\d]+)/sessions', $controller);
     }
 
     protected function registerWheelRoutes()

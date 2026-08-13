@@ -2,9 +2,7 @@
 
 namespace Wolf\Memberships\Controller;
 
-use Wolf\Core\Mvc\Controller\EntityController;
-
-class PeriodController extends EntityController
+class PeriodController extends AbstractCampaignController
 {
     protected $entityName = 'wolf-memberships.period';
 

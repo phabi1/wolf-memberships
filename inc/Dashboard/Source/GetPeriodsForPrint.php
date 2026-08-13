@@ -22,8 +22,10 @@ class GetPeriodsForPrint implements SourceBusInterface
             throw new \Exception("Campaign ID is required for get periods for print source");
         }
 
+        $periods = $this->periodRepository->find(['campaign_id' => ['eq' => $campaignId]]);
+
         return [
-            'periods' => $this->periodRepository->find(['campaign_id' => $campaignId])
+            'periods' => $periods
         ];
     }
 }

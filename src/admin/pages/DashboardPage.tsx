@@ -41,7 +41,7 @@ export default function DashboardPage() {
     },
     {
       i: "1",
-      x: 0,
+      x: 4,
       y: 2,
       w: 4,
       h: 6,
@@ -50,7 +50,7 @@ export default function DashboardPage() {
     },
     {
       i: "2",
-      x: 4,
+      x: 8,
       y: 2,
       w: 4,
       h: 2,

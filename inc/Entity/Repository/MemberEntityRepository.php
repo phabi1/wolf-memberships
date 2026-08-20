@@ -4,7 +4,7 @@ namespace Wolf\Memberships\Entity\Repository;
 
 use Wolf\Core\Entity\EntityRepository;
 
-class MemberEntityRepository extends EntityRepository
+class MemberEntityRepository extends EntityRepository implements MemberEntityRepositoryInterface
 {
     public function existsHash(string $hash): int|null
     {

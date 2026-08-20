@@ -22,7 +22,7 @@ return [
             '@wolf.use_case_bus'
         ]
     ],
-        'wolf-memberships.controller.session' => [
+    'wolf-memberships.controller.session' => [
         'class' => \Wolf\Memberships\Controller\SessionController::class
     ],
     'wolf-memberships.controller.lesson' => [
@@ -37,6 +37,12 @@ return [
             '@wolf.use_case_bus'
         ]
     ],
+    'wolf-memberships.controller.registration' => [
+        'class' => \Wolf\Memberships\Controller\RegistrationController::class,
+        'arguments' => [
+            '@wolf.use_case_bus'
+        ]
+    ],
     'wolf-memberships.controller.contact' => [
         'class' => \Wolf\Memberships\Controller\ContactController::class
     ],
@@ -45,6 +51,9 @@ return [
     ],
     'wolf-memberships.controller.wheel_assignment' => [
         'class' => \Wolf\Memberships\Controller\WheelAssignmentController::class
+    ],
+    'wolf-memberships.controller.file' => [
+        'class' => \Wolf\Memberships\Controller\FileController::class
     ],
     'wolf-memberships.dashboard.source_bus' => [
         'class' => \Wolf\Memberships\Dashboard\SourceBus::class
@@ -95,7 +104,8 @@ return [
     'wolf-memberships.use_case.get_lessons_completude' => [
         'class' => \Wolf\Memberships\UseCase\GetLessonsCompletudeUseCase::class,
         'arguments' => [
-            '@wolf.db'
+            '@wolf.db',
+            '@wolf.helper.date'
         ],
         'tags' => [
             [
@@ -166,6 +176,43 @@ return [
             [
                 'name' => 'use_case',
                 'value' => 'wolf-memberships.exists_member'
+            ]
+        ]
+    ],
+    'wolf-memberships.use_case.get_registration_for_campaign' => [
+        'class' => \Wolf\Memberships\UseCase\GetRegistrationUseCase::class,
+        'arguments' => [
+            '@wolf.entity.manager'
+        ],
+        'tags' => [
+            [
+                'name' => 'use_case',
+                'value' => 'wolf-memberships.get_registration_for_campaign'
+            ]
+        ]
+    ],
+    'wolf-memberships.use_case.register_to_campaign' => [
+        'class' => \Wolf\Memberships\UseCase\RegisterToCampaignUseCase::class,
+        'arguments' => [
+            '@wolf.entity.manager',
+            '@wolf-memberships.helper.member'
+        ],
+        'tags' => [
+            [
+                'name' => 'use_case',
+                'value' => 'wolf-memberships.register_to_campaign'
+            ]
+        ]
+    ],
+    'wolf-memberships.use_case.calculate_registration_total' => [
+        'class' => \Wolf\Memberships\UseCase\CalculateRegistrationTotalUseCase::class,
+        'arguments' => [
+            '@wolf.entity.manager',
+        ],
+        'tags' => [
+            [
+                'name' => 'use_case',
+                'value' => 'wolf-memberships.calculate_registration_total'
             ]
         ]
     ],

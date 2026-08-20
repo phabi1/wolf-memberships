@@ -5,7 +5,7 @@ namespace Wolf\Memberships\Controller;
 use Wolf\Core\Mvc\Controller\AbstractController;
 use WP_REST_Request;
 
-class UploadController extends AbstractController
+class FileController extends AbstractController
 {
     public function uploadAction(WP_REST_Request $request)
     {
@@ -47,23 +47,47 @@ class UploadController extends AbstractController
             return new \WP_Error('upload_error', $errorMessage, ['status' => 500]);
         }
 
+        $uploadDir = wp_get_upload_dir();
+
+        $uri = str_replace($uploadDir['basedir'], '', $movedFile['file']);
+
         // Example response
         return [
             'success' => true,
-            'message' => 'File uploaded successfully.',
-            'file_url' => $movedFile['url'],
-            'type' => $movedFile['type'],
+            'uri' => $uri,
         ];
     }
 
-    private function modifyUploadDir($dir)
+    public function removeAction(WP_REST_Request $request)
+    {
+        $uri = $request->get_param('uri');
+
+        if (!$uri) {
+            return new \WP_Error('missing_uri', 'No file URL provided', ['status' => 400]);
+        }
+
+        $uploadDir = wp_get_upload_dir();
+
+        $filePath = $uploadDir['basedir'] . $uri;
+
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+
+        return [
+            'success' => true,
+            'message' => 'File deleted successfully.',
+        ];
+    }
+
+    public function modifyUploadDir($dir)
     {
         $customDir = '/membership'; // Change this to your desired directory
 
         $dir['path'] = $dir['basedir'] . $customDir;
         $dir['url'] = $dir['baseurl'] . $customDir;
         $dir['subdir'] = $customDir;
-        
+
         return $dir;
     }
 }

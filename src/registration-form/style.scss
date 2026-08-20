@@ -1,0 +1,22 @@
+.wp-block-wolf-membership-registration-form {
+  background: #f8fafc;
+  border: 1px solid #dfe7f1;
+  border-radius: 16px;
+  padding: 24px;
+  color: #1f2937;
+  box-sizing: border-box;
+
+  .MuiStepLabel-label {
+    font-weight: 600;
+  }
+
+  .MuiCard-root {
+    background: #fff;
+    border-radius: 12px;
+  }
+
+  .MuiButton-root {
+    text-transform: none;
+    border-radius: 10px;
+  }
+}

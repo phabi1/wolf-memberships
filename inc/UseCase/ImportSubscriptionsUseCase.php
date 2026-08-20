@@ -5,12 +5,15 @@ namespace Wolf\Memberships\UseCase;
 use Wolf\Core\Entity\EntityManager;
 use Wolf\Core\Helper\DateHelper;
 use Wolf\Core\UseCase\UseCaseInterface;
+use Wolf\Memberships\Entity\Repository\CheckoutEntityRepositoryInterface;
 use Wolf\Memberships\Helper\MemberHelper;
 use Wolf\Memberships\Model\LicenseType;
 
 class ImportSubscriptionsUseCase implements UseCaseInterface
 {
     private $subscriptionRepository;
+
+    private CheckoutEntityRepositoryInterface $checkoutRepository;
 
     private $contactRepository;
 
@@ -25,6 +28,11 @@ class ImportSubscriptionsUseCase implements UseCaseInterface
     public function __construct(EntityManager $entityManager, MemberHelper $memberHelper, DateHelper $dateHelper)
     {
         $this->memberRepository = $entityManager->getRepository('wolf-memberships.member');
+        $checkoutRepository = $entityManager->getRepository('wolf-memberships.checkout');
+        if (!$checkoutRepository instanceof CheckoutEntityRepositoryInterface) {
+            throw new \RuntimeException('Checkout repository must implement CheckoutEntityRepositoryInterface');
+        }
+        $this->checkoutRepository = $checkoutRepository;
         $this->subscriptionRepository = $entityManager->getRepository('wolf-memberships.subscription');
         $this->contactRepository = $entityManager->getRepository('wolf-memberships.contact');
         $this->sessionRepository = $entityManager->getRepository('wolf-memberships.session');
@@ -56,7 +64,10 @@ class ImportSubscriptionsUseCase implements UseCaseInterface
 
         $separator = isset($params['separator']) ? $params['separator'] : ',';
 
+        $orders = [];
+
         $fields = isset($params['fields']) ? $params['fields'] : [
+            'order_id' => 'Référence commande',
             'subscribed_at' => 'Date de la commande',
             'firstName' => 'Prénom adhérent',
             'lastName' => 'Nom adhérent',
@@ -70,6 +81,16 @@ class ImportSubscriptionsUseCase implements UseCaseInterface
             'legal_guardian_lastName_2' => 'Nom du tuteur légal 2 (obligatoire si adhérent mineur)',
             'legal_guardian_firstName_2' => 'Prénom du tuteur légal 2 (obligatoire si adhérent mineur)',
             'legal_guardian_phone_2' => 'Téléphone du tuteur légal 2 (obligatoire si adhérent mineur)',
+            'address_number' => 'Numéro de voie',
+            'address_street_type' => 'Type de voie',
+            'address_line_1' => 'Nom de la voie',
+            'address_line_2' => 'Complément',
+            'postal_code' => 'Code postal',
+            'city' => 'Commune',
+            'country' => 'Pays',
+            'payer_firstname' => 'Prénom payeur',
+            'payer_lastname' => 'Nom payeur',
+            'payer_email' => 'Email payeur',
         ];
 
         $header = fgetcsv($handle, 0, $separator);
@@ -82,6 +103,8 @@ class ImportSubscriptionsUseCase implements UseCaseInterface
             $existsingMember = $this->memberRepository->findOne([
                 'hash' => ['eq' => $hash],
             ]);
+
+            $checkout = $this->getOrCreateCheckout($data, $campaignId, $orders);
 
             if ($existsingMember) {
                 $member = $this->updateMember($existsingMember, $data);
@@ -113,12 +136,19 @@ class ImportSubscriptionsUseCase implements UseCaseInterface
                 $subscribedAt = time();
             }
 
-            $subscription = $this->subscriptionRepository->insert([
+            $subscriptionData = [
                 'subscribed_at' => $subscribedAt,
-                'license_type' => $data['license_type'] ?? null,
+                'license_type' => $data['license_type'],
                 'member_id' => $member->id,
+                'checkout_id' => $checkout ? $checkout->id : null,
                 'campaign_id' => $campaignId,
-            ]);
+            ];
+
+            $address = $this->extractAddress($data);
+
+            $subscriptionData['address'] = $address;
+
+            $subscription = $this->subscriptionRepository->insert($subscriptionData);
 
             $contactData = $this->extractContacts($data);
             foreach ($contactData as $contact) {
@@ -147,12 +177,60 @@ class ImportSubscriptionsUseCase implements UseCaseInterface
         return $log;
     }
 
+    private function getOrCreateCheckout(array $data, int $campaignId, array &$orders)
+    {
+        if (!isset($data['order_id'])) {
+            return null;
+        }
+
+        if (isset($orders[$data['order_id']])) {
+            return $orders[$data['order_id']];
+        }
+
+        $existingCheckout = $this->checkoutRepository->findByOrder($campaignId, $data['order_id']);
+
+        if ($existingCheckout) {
+            $orders[$data['order_id']] = $existingCheckout;
+            return $existingCheckout;
+        }
+
+        $checkout = $this->checkoutRepository->insert([
+            'firstname' => $data['payer_firstname'] ?? null,
+            'lastname' => $data['payer_lastname'] ?? null,
+            'email' => $data['payer_email'] ?? null,
+            'phone' => $data['payer_phone'] ?? null,
+            'meta' => ['order_id' => $data['order_id']],
+            'campaign_id' => $campaignId,
+        ]);
+        $orders[$data['order_id']] = $checkout;
+        return $checkout;
+    }
+
+    private function extractAddress(array &$data): array
+    {
+
+        $zipcode = $data['postal_code'] ?? null;
+        if ($zipcode !== null) {
+            $zipcode = str_pad($zipcode, 5, '0', STR_PAD_LEFT);
+        }
+
+        return [
+            'number' => $data['address_number'] ?? null,
+            'street_type' => $data['address_street_type'] ?? null,
+            'line_1' => $data['address_line_1'] ?? null,
+            'line_2' => $data['address_line_2'] ?? null,
+            'postal_code' => $zipcode,
+            'city' => $data['city'] ?? null,
+            'country' => $data['country'] ?? null,
+        ];
+    }
+
     /**
      * Extracts contact information from the data array.
      * @param array $data
      * @return array
      */
-    private function extractContacts(array $data): array
+    private function extractContacts(array &$data): array
     {
         $contacts = [];
         for ($i = 1; $i <= 2; $i++) {

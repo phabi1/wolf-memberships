@@ -21,7 +21,7 @@ class Api implements ContainerAwareInterface
     {
         add_action('rest_api_init', function () {
             $this->restRoutesHelper = $this->getContainer()->get('wolf.rest.routes');
-            $this->registerUploadRoute();
+            $this->registerFilesRoute();
             $this->registerDashboardRoutes();
             $this->registerCampaignRoutes();
             $this->registerSubscriptionRoutes();
@@ -32,6 +32,7 @@ class Api implements ContainerAwareInterface
             $this->registerSessionRoutes();
             $this->registerWheelRoutes();
             $this->registerWheelAssignmentRoutes();
+            $this->registerRegistrationRoutes();
         });
     }
 
@@ -48,14 +49,28 @@ class Api implements ContainerAwareInterface
         return $this->getContainer()->get($controllerName);
     }
 
-    protected function registerUploadRoute()
+    protected function registerFilesRoute()
     {
-        $controller = $this->getController('wolf-memberships.controller.upload');
-        register_rest_route('wolf-memberships/v1', '/upload', [
+        $controller = $this->getController('wolf-memberships.controller.file');
+        register_rest_route('wolf-memberships/v1', '/file/upload', [
             'methods' => 'POST',
             'callback' => [$controller, 'upload'],
             'permission_callback' => '__return_true'
         ]);
+
+        register_rest_route('wolf-memberships/v1', '/file/upload', [
+            'methods' => 'DELETE',
+            'callback' => [$controller, 'remove'],
+            'permission_callback' => '__return_true'
+        ]);
+
+        register_rest_route('wolf-memberships/v1', '/file/download', [
+            'methods' => 'GET',
+            'callback' => [$controller, 'download'],
+            'permission_callback' => '__return_true'
+        ]);
+
+
     }
 
     protected function registerDashboardRoutes()
@@ -85,6 +100,26 @@ class Api implements ContainerAwareInterface
         register_rest_route('wolf-memberships/v1', '/members/generate-hash', [
             'methods' => 'GET',
             'callback' => [$controller, 'generateHash'],
+            'permission_callback' => '__return_true'
+        ]);
+    }
+
+    protected function registerRegistrationRoutes()
+    {
+        $controller = $this->getController('wolf-memberships.controller.registration');
+        register_rest_route('wolf-memberships/v1', 'campaigns/(?P<campaign_id>[\d]+)/registration', [
+            'methods' => 'GET',
+            'callback' => [$controller, 'registrationAction'],
+            'permission_callback' => '__return_true'
+        ]);
+        register_rest_route('wolf-memberships/v1', 'campaigns/(?P<campaign_id>[\d]+)/registration/calculate-total', [
+            'methods' => 'POST',
+            'callback' => [$controller, 'calculateTotalAction'],
+            'permission_callback' => '__return_true'
+        ]);
+        register_rest_route('wolf-memberships/v1', 'campaigns/(?P<campaign_id>[\d]+)/register', [
+            'methods' => 'POST',
+            'callback' => [$controller, 'registerAction'],
             'permission_callback' => '__return_true'
         ]);
     }

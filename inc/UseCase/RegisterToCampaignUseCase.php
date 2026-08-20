@@ -6,6 +6,7 @@ use stdClass;
 use Wolf\Core\Db\Exception\DuplicateEntryException;
 use Wolf\Core\UseCase\UseCaseInterface;
 use Wolf\Core\Entity\EntityManager;
+use Wolf\Mail\MailService;
 use Wolf\Memberships\Helper\MemberHelper;
 use Wolf\Memberships\Entity\Repository\MemberEntityRepositoryInterface;
 
@@ -25,7 +26,9 @@ class RegisterToCampaignUseCase implements UseCaseInterface
 
     private MemberHelper $memberHelper;
 
-    public function __construct(EntityManager $entityManager, MemberHelper $memberHelper)
+    private MailService $mailService;
+
+    public function __construct(EntityManager $entityManager, MemberHelper $memberHelper, MailService $mailService)
     {
         $this->campaignRepository = $entityManager->getRepository('wolf-memberships.campaign');
         $this->checkoutRepository = $entityManager->getRepository('wolf-memberships.checkout');
@@ -34,6 +37,7 @@ class RegisterToCampaignUseCase implements UseCaseInterface
         $this->memberRepository = $entityManager->getRepository('wolf-memberships.member');
         $this->contactRepository = $entityManager->getRepository('wolf-memberships.contact');
         $this->memberHelper = $memberHelper;
+        $this->mailService = $mailService;
     }
 
     public function execute(array $params = []): array
@@ -73,7 +77,7 @@ class RegisterToCampaignUseCase implements UseCaseInterface
             throw $e; // Rethrow the exception after rollback
 
         }
-        
+
         $editUrl = $this->buildEditUrl($campaign, $checkout);
 
         if (
@@ -182,16 +186,7 @@ class RegisterToCampaignUseCase implements UseCaseInterface
     {
         $subject = 'Registration Confirmation';
 
-        ob_start();
-        extract($context);
-        include __DIR__ . '/../../mails/confirmation.html.php';
-        $message = ob_get_clean();
-
-        $headers = [
-            'Content-Type: text/html; charset=UTF-8',
-        ];
-
-        return wp_mail($email, $subject, $message, $headers);
+        return $this->mailService->sendMail($email, 'wolf-membership:confirmation', json_encode($context));
 
     }
 }

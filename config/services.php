@@ -195,7 +195,8 @@ return [
         'class' => \Wolf\Memberships\UseCase\RegisterToCampaignUseCase::class,
         'arguments' => [
             '@wolf.entity.manager',
-            '@wolf-memberships.helper.member'
+            '@wolf-memberships.helper.member',
+            '@wolf.mail'
         ],
         'tags' => [
             [

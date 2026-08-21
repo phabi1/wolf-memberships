@@ -14,7 +14,9 @@ class RegistrationController extends AbstractController
         $useCaseBus = $this->getService('wolf.use_case_bus');
 
         $res = $useCaseBus->execute('wolf-memberships.get_registration_for_campaign', [
-            'campaignId' => $request->get_param('campaign_id')
+            'campaign_id' => $request->get_param('campaign_id'),
+            'request_id' => $request->get_param('request_id'),
+            'token' => $request->get_param('token')
         ]);
 
         return $res;
@@ -29,7 +31,7 @@ class RegistrationController extends AbstractController
         $campaignId = $request->get_param('campaign_id');
 
         $total = $useCaseBus->execute('wolf-memberships.calculate_registration_total', [
-            'campaignId' => $campaignId,
+            'campaign_id' => $campaignId,
             'participants' => $participants,
         ]);
 
@@ -44,38 +46,49 @@ class RegistrationController extends AbstractController
 
     public function registerAction(WP_REST_Request $request)
     {
-        $useCaseBus = $this->getService('wolf.use_case_bus');
+        $campaignId = $request->get_param('campaign_id');
         $payload = $request->get_json_params() ?: [];
 
-        $participants = $payload['participants'] ?? [];
-        $campaignId = $request->get_param('campaign_id');
+        if (!$campaignId) {
+            return [
+                'success' => false,
+                'message' => 'Missing campaign_id parameter.'
+            ];
+        }
 
-        $total = $useCaseBus->execute('wolf-memberships.calculate_registration_total', [
-            'campaignId' => $campaignId,
-            'participants' => $participants,
-        ]);
+        $useCaseBus = $this->getService('wolf.use_case_bus');
 
-        $payload['total_amount'] = $total['total_amount'] ?? 0;
-        $payload['pricing_breakdown'] = $total['items'] ?? [];
+        $requestId = $payload['request_id'] ?? null;
+        $token = $payload['token'] ?? null;
 
-        $useCaseBus->execute('wolf-memberships.register_to_campaign', [
-            'campaignId' => $campaignId,
-            'participants' => $participants,
-            'payer' => $payload['payer'] ?? null,
-            'total_amount' => $payload['total_amount'],
-        ]);
+        if ($requestId) {
+            $useCaseBus->execute('wolf-memberships.update_request', [
+                'campaign_id' => $campaignId,
+                'request_id' => $requestId,
+                'token' => $token,
+                'contact' => [
+                    'firstname' => $payload['contact']['firstname'] ?? null,
+                    'lastname' => $payload['contact']['lastname'] ?? null,
+                    'email' => $payload['contact']['email'] ?? null,
+                    'phone' => $payload['contact']['phone'] ?? null,
+                ],
+                'data' => $payload['data'] ?? [],
+            ]);
+        } else {
+            $useCaseBus->execute('wolf-memberships.register_to_campaign', [
+                'campaign_id' => $campaignId,
+                'contact' => [
+                    'firstname' => $payload['contact']['firstname'] ?? null,
+                    'lastname' => $payload['contact']['lastname'] ?? null,
+                    'email' => $payload['contact']['email'] ?? null,
+                    'phone' => $payload['contact']['phone'] ?? null,
+                ],
+                'data' => $payload['data'] ?? [],
+            ]);
+        }
 
         return [
             'success' => true,
-            'total_amount' => $payload['total_amount'],
-            'participants_count' => $total['participants_count'] ?? count($participants),
-            'currency' => $total['currency'] ?? 'EUR',
-            'summary' => [
-                'total_amount' => $payload['total_amount'],
-                'participants_count' => $total['participants_count'] ?? count($participants),
-                'currency' => $total['currency'] ?? 'EUR',
-            ],
-            'pricing_breakdown' => $payload['pricing_breakdown'],
         ];
     }
 }

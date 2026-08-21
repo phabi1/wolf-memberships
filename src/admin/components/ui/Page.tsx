@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 export type Action = {
   name: string;
   label: string;
+  primary?: boolean;
   handler?: () => void;
 };
 
@@ -17,11 +18,16 @@ export type PageProps = PropsWithChildren<{
 }>;
 
 function PageActions({ actions }: { actions: Action[] }) {
-  const primaryAction = useMemo(() => actions[0], [actions]);
+  const primaryActions = useMemo(() => actions.filter((action) => action.primary), [actions]);
+
+  const hasPrimaryActions = useMemo(
+    () => primaryActions.length > 0,
+    [primaryActions],
+  );
 
   const secondaryActions = useMemo(
-    () => actions.filter((action) => action !== primaryAction),
-    [actions, primaryAction],
+    () => actions.filter((action) => !action.primary),
+    [actions],
   );
 
   const hasSecondaryAction = useMemo(
@@ -37,12 +43,15 @@ function PageActions({ actions }: { actions: Action[] }) {
 
   return (
     <div>
-      <Button
-        variant="contained"
-        onClick={() => handleActionClick(primaryAction)}
-      >
-        {primaryAction.label}
-      </Button>
+      {hasPrimaryActions && primaryActions.map((action) => (
+        <Button
+          key={action.name}
+          variant="contained"
+          onClick={() => handleActionClick(action)}
+        >
+          {action.label}
+        </Button>
+      ))}
       {hasSecondaryAction &&
         secondaryActions.map((action) => (
           <Button key={action.name} onClick={() => handleActionClick(action)}>

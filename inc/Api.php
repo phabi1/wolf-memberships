@@ -32,6 +32,7 @@ class Api implements ContainerAwareInterface
             $this->registerSessionRoutes();
             $this->registerWheelRoutes();
             $this->registerWheelAssignmentRoutes();
+            $this->registerRequestRoutes();
             $this->registerRegistrationRoutes();
         });
     }
@@ -104,6 +105,34 @@ class Api implements ContainerAwareInterface
         ]);
     }
 
+    protected function registerRequestRoutes()
+    {
+        $controller = $this->getController('wolf-memberships.controller.request');
+        $this->restRoutesHelper->createRoutes('wolf-memberships/v1', 'campaigns/(?P<campaign_id>[\d]+)/requests', $controller, [
+            'actions' => Routes::ROUTE_ITEMS | Routes::ROUTE_ITEM
+        ]);
+        register_rest_route('wolf-memberships/v1', 'campaigns/(?P<campaign_id>[\d]+)/requests/(?P<request_id>[\d]+)/approve', [
+            'methods' => 'POST',
+            'callback' => [$controller, 'approve'],
+            'permission_callback' => '__return_true'
+        ]);
+        register_rest_route('wolf-memberships/v1', 'campaigns/(?P<campaign_id>[\d]+)/requests/(?P<request_id>[\d]+)/reject', [
+            'methods' => 'POST',
+            'callback' => [$controller, 'reject'],
+            'permission_callback' => '__return_true'
+        ]);
+        register_rest_route('wolf-memberships/v1', 'campaigns/(?P<campaign_id>[\d]+)/requests/(?P<request_id>[\d]+)/paid', [
+            'methods' => 'POST',
+            'callback' => [$controller, 'paid'],
+            'permission_callback' => '__return_true'
+        ]);
+        register_rest_route('wolf-memberships/v1', 'campaigns/(?P<campaign_id>[\d]+)/requests/(?P<request_id>[\d]+)/cancel', [
+            'methods' => 'POST',
+            'callback' => [$controller, 'cancel'],
+            'permission_callback' => '__return_true'
+        ]);
+    }
+
     protected function registerRegistrationRoutes()
     {
         $controller = $this->getController('wolf-memberships.controller.registration');
@@ -152,11 +181,11 @@ class Api implements ContainerAwareInterface
         $this->restRoutesHelper->createRoutes('wolf-memberships/v1', 'campaigns', $controller);
     }
 
-     protected function registerPeriodRoutes()
+    protected function registerPeriodRoutes()
     {
         $controller = $this->getController('wolf-memberships.controller.period');
         $this->restRoutesHelper->createRoutes('wolf-memberships/v1', 'campaigns/(?P<campaign_id>[\d]+)/periods', $controller);
-                register_rest_route('wolf-memberships/v1', 'campaigns/(?P<campaign_id>[\d]+)/periods/(?P<id>[\d]+)/print', [
+        register_rest_route('wolf-memberships/v1', 'campaigns/(?P<campaign_id>[\d]+)/periods/(?P<id>[\d]+)/print', [
             'methods' => 'POST',
             'callback' => [$controller, 'print'],
             'permission_callback' => '__return_true'

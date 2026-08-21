@@ -92,9 +92,8 @@ return [
             ]
         ]
     ],
-    'wolf-memberships.checkout' => [
-        'table' => 'wolf_memberships_checkout',
-        'repository' => Wolf\Memberships\Entity\Repository\CheckoutEntityRepository::class,
+    'wolf-memberships.request' => [
+        'table' => 'wolf_memberships_request',
         'fields' => [
             'id' => ['type' => Field::TYPE_INTEGER],
             'status' => ['type' => Field::TYPE_STRING, 'required' => true],
@@ -102,7 +101,8 @@ return [
             'lastname' => ['type' => Field::TYPE_STRING, 'required' => true],
             'email' => ['type' => Field::TYPE_STRING, 'required' => true],
             'phone' => ['type' => Field::TYPE_STRING, 'nullable' => true],
-            'meta' => ['type' => Field::TYPE_JSON, 'nullable' => true],
+            'data' => ['type' => Field::TYPE_JSON, 'nullable' => true],
+            'token' => ['type' => Field::TYPE_STRING, 'required' => true, 'exclude' => true],
             'campaign_id' => ['type' => Field::TYPE_INTEGER, 'required' => true],
         ],
     ],
@@ -118,7 +118,6 @@ return [
             'fields' => ['type' => Field::TYPE_JSON, 'nullable' => true],
             'subscribed_at' => ['type' => Field::TYPE_DATETIME, 'required' => true],
             'campaign_id' => ['type' => Field::TYPE_INTEGER, 'required' => true],
-            'checkout_id' => ['type' => Field::TYPE_INTEGER, 'nullable' => true],
             'member_id' => ['type' => Field::TYPE_INTEGER, 'required' => true],
         ],
         'relations' => [
@@ -134,13 +133,6 @@ return [
                 'target_entity' => 'wolf-memberships.member',
                 'options' => [
                     'join_field' => 'member_id'
-                ]
-            ],
-            'checkout' => [
-                'type' => Relation::TYPE_ONE_TO_ONE,
-                'target_entity' => 'wolf-memberships.checkout',
-                'options' => [
-                    'join_field' => 'checkout_id'
                 ]
             ],
             "contacts" => [

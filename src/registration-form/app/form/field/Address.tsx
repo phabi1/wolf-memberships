@@ -29,35 +29,35 @@ export function AddressField({ address, onChange }: {
     return (
         <Box display="grid" gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr" }} gap={2}>
             <TextField
-                label={__("Ligne 1", TEXT_DOMAIN)}
+                label={__("Line 1", TEXT_DOMAIN)}
                 value={address.line1 || ""}
                 onChange={(event) => handleChange("line1", event.target.value)}
                 fullWidth
                 sx={{ gridColumn: { xs: "auto", sm: "1 / -1" } }}
             />
             <TextField
-                label={__("Ligne 2", TEXT_DOMAIN)}
+                label={__("Line 2", TEXT_DOMAIN)}
                 value={address.line2 || ""}
                 onChange={(event) => handleChange("line2", event.target.value)}
                 fullWidth
                 sx={{ gridColumn: { xs: "auto", sm: "1 / -1" } }}
             />
             <TextField
-                label={__("Code postal", TEXT_DOMAIN)}
+                label={__("Postal Code", TEXT_DOMAIN)}
                 value={address.zipcode || ""}
                 onChange={(event) => handleChange("zipcode", event.target.value)}
                 fullWidth
                 required
             />
             <TextField
-                label={__("Ville", TEXT_DOMAIN)}
+                label={__("City", TEXT_DOMAIN)}
                 value={address.city || ""}
                 onChange={(event) => handleChange("city", event.target.value)}
                 fullWidth
                 required
             />
             <TextField
-                label={__("Pays", TEXT_DOMAIN)}
+                label={__("Country", TEXT_DOMAIN)}
                 value={address.country || ""}
                 onChange={(event) => handleChange("country", event.target.value)}
                 fullWidth

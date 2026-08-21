@@ -1,0 +1,381 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Wolf Membership\n"
+"POT-Creation-Date: 2026-08-21 15:19+0200\n"
+"PO-Revision-Date: 2026-08-21 15:04+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"X-Generator: Poedit 3.9\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: wolf-membership.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: "
+"__;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.min.js\n"
+"X-Poedit-SearchPathExcluded-1: vendor\n"
+"X-Poedit-SearchPathExcluded-2: node_modules\n"
+
+#: build/admin/pay/render.php:27 build/pay/render.php:27 src/pay/render.php:27
+msgid "Invalid request or token."
+msgstr ""
+
+#: build/admin/pay/render.php:33 build/pay/render.php:33 src/pay/render.php:33
+msgid "This request is not approved yet."
+msgstr ""
+
+#: build/admin/pay/render.php:59 build/admin/pay/render.php:164
+#: build/pay/render.php:59 build/pay/render.php:164 src/pay/render.php:59
+#: src/pay/render.php:164
+msgid "Invalid payment method."
+msgstr ""
+
+#: build/admin/pay/render.php:172 build/pay/render.php:172
+#: src/pay/render.php:172
+msgid "Failed to generate payment URL."
+msgstr ""
+
+#: build/admin/pay/render.php:187 build/pay/render.php:187
+#: src/pay/render.php:187
+msgid "Please select a payment method to complete your registration:"
+msgstr ""
+
+#: build/admin/result/render.php:31 build/result/render.php:31
+#: src/result/render.php:31
+msgid "Payment processed successfully!"
+msgstr ""
+
+#: build/admin/result/render.php:33 build/result/render.php:33
+#: src/result/render.php:33
+msgid "Invalid payment result parameters."
+msgstr ""
+
+#: inc/Admin.php:16 inc/Admin.php:17
+msgid "Membership"
+msgstr ""
+
+#: src/pay/edit.js:35 src/result/edit.js:35
+msgid "Event result – hello from the editor!"
+msgstr ""
+
+#: src/registration-form/app/App.tsx:88
+msgid "An error occurred."
+msgstr ""
+
+#: src/registration-form/app/App.tsx:151
+msgid "The amount could not be calculated."
+msgstr ""
+
+#: src/registration-form/app/App.tsx:164
+msgid "An error occurred while calculating the amount."
+msgstr ""
+
+#: src/registration-form/app/App.tsx:300
+msgid "Please complete the information for each participant before proceeding."
+msgstr ""
+
+#: src/registration-form/app/App.tsx:314 src/registration-form/app/App.tsx:498
+msgid ""
+"Please complete the contact information and the information for each "
+"participant."
+msgstr ""
+
+#: src/registration-form/app/App.tsx:397
+msgid "The registration could not be saved."
+msgstr ""
+
+#: src/registration-form/app/App.tsx:412
+msgid "An error occurred during registration."
+msgstr ""
+
+#: src/registration-form/app/App.tsx:435
+msgid "Registration Successful!"
+msgstr ""
+
+#: src/registration-form/app/App.tsx:439
+msgid "Thank you for your registration. We will contact you shortly."
+msgstr ""
+
+#: src/registration-form/app/App.tsx:449
+msgid "Participants"
+msgstr ""
+
+#: src/registration-form/app/App.tsx:450
+#: src/registration-form/app/steps/ReviewStep.tsx:45
+msgid "Contact"
+msgstr ""
+
+#: src/registration-form/app/App.tsx:451
+msgid "Review"
+msgstr ""
+
+#: src/registration-form/app/form/field/Address.tsx:32
+msgid "Line 1"
+msgstr ""
+
+#: src/registration-form/app/form/field/Address.tsx:39
+msgid "Line 2"
+msgstr ""
+
+#: src/registration-form/app/form/field/Address.tsx:46
+msgid "Postal Code"
+msgstr ""
+
+#: src/registration-form/app/form/field/Address.tsx:53
+msgid "City"
+msgstr ""
+
+#: src/registration-form/app/form/field/Address.tsx:60
+msgid "Country"
+msgstr ""
+
+#: src/registration-form/app/form/field/Upload.tsx:75
+msgid "Uploading..."
+msgstr ""
+
+#: src/registration-form/app/form/field/Upload.tsx:85
+msgid "Removing..."
+msgstr ""
+
+#: src/registration-form/app/form/field/Upload.tsx:106
+msgid "Selected file:"
+msgstr ""
+
+#: src/registration-form/app/form/field/Upload.tsx:109
+msgid "Remove"
+msgstr ""
+
+#: src/registration-form/app/form/field/Upload.tsx:114
+msgid "Upload"
+msgstr ""
+
+#: src/registration-form/app/steps/ContactStep.tsx:25
+msgid "Contact Information"
+msgstr ""
+
+#: src/registration-form/app/steps/ContactStep.tsx:30
+#: src/registration-form/app/steps/ParticipantsStep.tsx:97
+#: src/registration-form/app/steps/ParticipantsStep.tsx:228
+msgid "First Name"
+msgstr ""
+
+#: src/registration-form/app/steps/ContactStep.tsx:37
+#: src/registration-form/app/steps/ParticipantsStep.tsx:110
+#: src/registration-form/app/steps/ParticipantsStep.tsx:240
+msgid "Last Name"
+msgstr ""
+
+#: src/registration-form/app/steps/ContactStep.tsx:44
+#: src/registration-form/app/steps/ParticipantsStep.tsx:252
+msgid "Email"
+msgstr ""
+
+#: src/registration-form/app/steps/ContactStep.tsx:52
+#: src/registration-form/app/steps/ParticipantsStep.tsx:265
+msgid "Phone"
+msgstr ""
+
+#: src/registration-form/app/steps/ContactStep.tsx:61
+msgid "Message or special request"
+msgstr ""
+
+#: src/registration-form/app/steps/ContactStep.tsx:71
+#: src/registration-form/app/steps/ReviewStep.tsx:128
+msgid "Back"
+msgstr ""
+
+#: src/registration-form/app/steps/ContactStep.tsx:73
+msgid "View Summary"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:45
+msgid "Register one or more participants"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:59
+#: src/registration-form/app/steps/ParticipantsStep.tsx:78
+msgid "Participant"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:83
+msgid "Remove participant"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:123
+msgid "Birthdate"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:139
+msgid "License Type"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:152
+msgid "Hobby License"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:155
+msgid "Competition License"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:160
+msgid "Desired Course"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:174
+msgid "Choose a course"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:186
+msgid "Address"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:203
+msgid "Guardian Information"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:207
+msgid "Guardian 1"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:208
+msgid "Guardian 2"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:285
+msgid "Health Questionnaire"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:304
+msgid "Required Documents for Competition License"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:315
+msgid "ID Photo"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:335
+msgid "Medical Certificate"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:352
+msgid "Additional Information"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:381
+msgid "Add a Person"
+msgstr ""
+
+#: src/registration-form/app/steps/ParticipantsStep.tsx:388
+msgid "Next"
+msgstr ""
+
+#: src/registration-form/app/steps/ReviewStep.tsx:40
+msgid "Review Your Registration"
+msgstr ""
+
+#: src/registration-form/app/steps/ReviewStep.tsx:64
+msgid "Person"
+msgstr ""
+
+#: src/registration-form/app/steps/ReviewStep.tsx:71
+msgid "Course:"
+msgstr ""
+
+#: src/registration-form/app/steps/ReviewStep.tsx:71
+msgid "Not selected"
+msgstr ""
+
+#: src/registration-form/app/steps/ReviewStep.tsx:74
+msgid "License:"
+msgstr ""
+
+#: src/registration-form/app/steps/ReviewStep.tsx:74
+msgid "Competition"
+msgstr ""
+
+#: src/registration-form/app/steps/ReviewStep.tsx:74
+msgid "Hobby"
+msgstr ""
+
+#: src/registration-form/app/steps/ReviewStep.tsx:77
+msgid "Address:"
+msgstr ""
+
+#: src/registration-form/app/steps/ReviewStep.tsx:84
+#: src/registration-form/app/steps/ReviewStep.tsx:89
+#: src/registration-form/app/steps/ReviewStep.tsx:92
+msgid "Not provided"
+msgstr ""
+
+#: src/registration-form/app/steps/ReviewStep.tsx:89
+msgid "Guardian 1:"
+msgstr ""
+
+#: src/registration-form/app/steps/ReviewStep.tsx:92
+msgid "Guardian 2:"
+msgstr ""
+
+#: src/registration-form/app/steps/ReviewStep.tsx:98
+msgid "Health Questionnaire:"
+msgstr ""
+
+#: src/registration-form/app/steps/ReviewStep.tsx:98
+#: src/registration-form/app/steps/ReviewStep.tsx:104
+#: src/registration-form/app/steps/ReviewStep.tsx:107
+msgid "File not added"
+msgstr ""
+
+#: src/registration-form/app/steps/ReviewStep.tsx:104
+msgid "Identity Photo:"
+msgstr ""
+
+#: src/registration-form/app/steps/ReviewStep.tsx:107
+msgid "Medical Certificate:"
+msgstr ""
+
+#: src/registration-form/app/steps/ReviewStep.tsx:119
+msgid "Total to Pay"
+msgstr ""
+
+#: src/registration-form/app/steps/ReviewStep.tsx:131
+msgid "Saving..."
+msgstr ""
+
+#: src/registration-form/app/steps/ReviewStep.tsx:131
+msgid "Confirm"
+msgstr ""
+
+#: src/registration-form/edit.js:9
+msgid "Registration Campaign Form"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "Wolf Membership"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://wordpress.org/plugins/wolf-membership/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"This is not just a plugin, it symbolizes the hope and enthusiasm of an "
+"entire generation summed up in two words sung most famously by Louis "
+"Armstrong: Hello, Dolly. When activated you will randomly see a lyric from "
+"<cite>Hello, Dolly</cite> in the upper right of your admin screen on every "
+"page."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Phabi1"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://www.rollerlesloups.fr/"
+msgstr ""

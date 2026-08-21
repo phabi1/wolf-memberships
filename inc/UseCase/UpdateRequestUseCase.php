@@ -8,7 +8,7 @@ use Wolf\Core\UseCase\UseCaseInterface;
 use Wolf\Core\Entity\EntityManager;
 use Wolf\Core\Mail\MailService;
 
-class RegisterToCampaignUseCase implements UseCaseInterface
+class UpdateRequestUseCase implements UseCaseInterface
 {
     private EntityRepositoryInterface $campaignRepository;
 
@@ -45,15 +45,25 @@ class RegisterToCampaignUseCase implements UseCaseInterface
             }
         }
 
+        if (!isset($params['request_id'])) {
+            throw new \InvalidArgumentException('Request ID is required for updating a request.');
+        }
 
-        $request = $this->requestRepository->insert([
-            'status' => 'pending',
+        $request = $this->requestRepository->findById($params['request_id']);
+        if (!$request) {
+            throw new \Exception('Request not found.');
+        }
+
+        if ($request->token !== $params['token']) {
+            throw new \Exception('Invalid token for the request.');
+        }
+
+        $request = $this->requestRepository->update($params['request_id'], [
             'firstname' => $params['contact']['firstname'] ?? null,
             'lastname' => $params['contact']['lastname'] ?? null,
             'email' => $params['contact']['email'] ?? null,
             'phone' => $params['contact']['phone'] ?? null,
             'data' => $params['data'] ?? [],
-            'token' => bin2hex(random_bytes(16)), // Generate a random token
             'campaign_id' => $campaignId,
         ]);
 
@@ -64,8 +74,6 @@ class RegisterToCampaignUseCase implements UseCaseInterface
         if ($this->sendNewRequestEmail($campaign, $request) === false) {
             throw new \Exception('Failed to send new request email.');
         }
-
-       
 
         return [
             'request_id' => $request->id,

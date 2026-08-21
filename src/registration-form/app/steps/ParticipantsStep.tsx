@@ -24,47 +24,25 @@ export function ParticipantsStep({
   onRemoveParticipant,
   onSelectParticipant,
   onNext,
-  canContinueToContact,
+  canNext,
+}: {
+  participants: any[];
+  lessons: any[];
+  selectedParticipantIndex: number;
+  onChangeParticipant: (index: number, field: string, value: any) => void;
+  onAddParticipant: () => void;
+  onRemoveParticipant: (index: number) => void;
+  onSelectParticipant: (index: number) => void;
+  onNext: () => void;
+  canNext: boolean;
 }) {
   const selectedParticipant =
     participants[selectedParticipantIndex] || participants[0];
 
-  const openMediaUploader = (label, onSelect) => {
-    if (typeof window === "undefined" || !window.wp || !window.wp.media) {
-      return;
-    }
-
-    const mediaFrame = window.wp.media({
-      title: label,
-      button: {
-        text: __("Choisir", TEXT_DOMAIN),
-      },
-      multiple: false,
-    });
-
-    mediaFrame.on("select", () => {
-      const attachment = mediaFrame.state().get("selection").first().toJSON();
-
-      onSelect({
-        id: attachment.id,
-        name:
-          attachment.filename ||
-          attachment.name ||
-          attachment.title ||
-          "Document",
-        url: attachment.url || "",
-        type: attachment.mime || attachment.type || "",
-        size: attachment.filesizeInBytes || attachment.filesize || 0,
-      });
-    });
-
-    mediaFrame.open();
-  };
-
   return (
     <Box>
       <Typography variant="subtitle1" gutterBottom>
-        {__("Inscrivez une ou plusieurs personnes", TEXT_DOMAIN)}
+        {__("Register one or more participants", TEXT_DOMAIN)}
       </Typography>
 
       <Box display="flex" flexWrap="wrap" gap={1} mb={2}>
@@ -78,7 +56,7 @@ export function ParticipantsStep({
             onClick={() => onSelectParticipant(index)}
             sx={{ textTransform: "none" }}
           >
-            {__("Personne", TEXT_DOMAIN)} {index + 1}
+            {__("Participant", TEXT_DOMAIN)} {index + 1}
             {participant.firstname || participant.lastname
               ? ` · ${participant.firstname} ${participant.lastname}`.trim()
               : ""}
@@ -97,12 +75,12 @@ export function ParticipantsStep({
               mb={2}
             >
               <Typography variant="h6">
-                {__("Personne", TEXT_DOMAIN)} {selectedParticipantIndex + 1}
+                {__("Participant", TEXT_DOMAIN)} {selectedParticipantIndex + 1}
               </Typography>
               {participants.length > 1 && (
                 <IconButton
                   color="error"
-                  aria-label={__("Supprimer la personne", TEXT_DOMAIN)}
+                  aria-label={__("Remove participant", TEXT_DOMAIN)}
                   onClick={() => onRemoveParticipant(selectedParticipantIndex)}
                 >
                   <RemoveIcon />
@@ -116,7 +94,7 @@ export function ParticipantsStep({
               gap={2}
             >
               <TextField
-                label={__("Prénom", TEXT_DOMAIN)}
+                label={__("First Name", TEXT_DOMAIN)}
                 value={selectedParticipant.firstname}
                 onChange={(event) =>
                   onChangeParticipant(
@@ -129,7 +107,7 @@ export function ParticipantsStep({
                 required
               />
               <TextField
-                label={__("Nom", TEXT_DOMAIN)}
+                label={__("Last Name", TEXT_DOMAIN)}
                 value={selectedParticipant.lastname}
                 onChange={(event) =>
                   onChangeParticipant(
@@ -142,7 +120,7 @@ export function ParticipantsStep({
                 required
               />
               <TextField
-                label={__("Date de naissance", TEXT_DOMAIN)}
+                label={__("Birthdate", TEXT_DOMAIN)}
                 type="date"
                 value={selectedParticipant.birthdate}
                 onChange={(event) =>
@@ -158,7 +136,7 @@ export function ParticipantsStep({
               />
               <TextField
                 select
-                label={__("Type de licence", TEXT_DOMAIN)}
+                label={__("License Type", TEXT_DOMAIN)}
                 value={selectedParticipant.license_type || "hobby"}
                 onChange={(event) =>
                   onChangeParticipant(
@@ -171,15 +149,15 @@ export function ParticipantsStep({
                 required
               >
                 <MenuItem value="hobby">
-                  {__("Licence loisir", TEXT_DOMAIN)}
+                  {__("Hobby License", TEXT_DOMAIN)}
                 </MenuItem>
                 <MenuItem value="competition">
-                  {__("Licence compétition", TEXT_DOMAIN)}
+                  {__("Competition License", TEXT_DOMAIN)}
                 </MenuItem>
               </TextField>
               <TextField
                 select
-                label={__("Cours souhaité", TEXT_DOMAIN)}
+                label={__("Desired Course", TEXT_DOMAIN)}
                 value={selectedParticipant.lesson_id}
                 onChange={(event) =>
                   onChangeParticipant(
@@ -193,7 +171,7 @@ export function ParticipantsStep({
                 sx={{ gridColumn: { xs: "auto", sm: "1 / -1" } }}
               >
                 <MenuItem value="">
-                  {__("Choisir un cours", TEXT_DOMAIN)}
+                  {__("Choose a course", TEXT_DOMAIN)}
                 </MenuItem>
                 {lessons.map((lesson) => (
                   <MenuItem key={lesson.id} value={String(lesson.id)}>
@@ -205,7 +183,7 @@ export function ParticipantsStep({
 
             <Box sx={{ mt: 3 }}>
               <Typography variant="h6" gutterBottom>
-                {__("Adresse", TEXT_DOMAIN)}
+                {__("Address", TEXT_DOMAIN)}
               </Typography>
 
               <AddressField
@@ -222,12 +200,12 @@ export function ParticipantsStep({
             {isParticipantMinor(selectedParticipant.birthdate) && (
               <Box sx={{ mt: 3 }}>
                 <Typography variant="h6" gutterBottom>
-                  {__("Informations des tuteurs", TEXT_DOMAIN)}
+                  {__("Guardian Information", TEXT_DOMAIN)}
                 </Typography>
 
                 {[
-                  { key: "tutor1", label: __("Tuteur 1", TEXT_DOMAIN) },
-                  { key: "tutor2", label: __("Tuteur 2", TEXT_DOMAIN) },
+                  { key: "tutor1", label: __("Guardian 1", TEXT_DOMAIN) },
+                  { key: "tutor2", label: __("Guardian 2", TEXT_DOMAIN) },
                 ].map(({ key, label }) => (
                   <Box
                     key={key}
@@ -247,7 +225,7 @@ export function ParticipantsStep({
                       gap={2}
                     >
                       <TextField
-                        label={__("Prénom", TEXT_DOMAIN)}
+                        label={__("First Name", TEXT_DOMAIN)}
                         value={selectedParticipant[key]?.firstname || ""}
                         onChange={(event) =>
                           onChangeParticipant(selectedParticipantIndex, key, {
@@ -259,7 +237,7 @@ export function ParticipantsStep({
                         required
                       />
                       <TextField
-                        label={__("Nom", TEXT_DOMAIN)}
+                        label={__("Last Name", TEXT_DOMAIN)}
                         value={selectedParticipant[key]?.lastname || ""}
                         onChange={(event) =>
                           onChangeParticipant(selectedParticipantIndex, key, {
@@ -284,7 +262,7 @@ export function ParticipantsStep({
                         required
                       />
                       <TextField
-                        label={__("Téléphone", TEXT_DOMAIN)}
+                        label={__("Phone", TEXT_DOMAIN)}
                         value={selectedParticipant[key]?.phone || ""}
                         onChange={(event) =>
                           onChangeParticipant(selectedParticipantIndex, key, {
@@ -304,7 +282,7 @@ export function ParticipantsStep({
             {selectedParticipant.license_type === "hobby" && (
               <Box sx={{ mt: 2 }}>
                 <Typography variant="body2" sx={{ mb: 1 }}>
-                  {__("Questionnaire de santé", TEXT_DOMAIN)}
+                  {__("Health Questionnaire", TEXT_DOMAIN)}
                 </Typography>
                 <UploadField
                   file={selectedParticipant.health_questionnaire}
@@ -323,7 +301,7 @@ export function ParticipantsStep({
               <Box sx={{ mt: 2 }}>
                 <Typography variant="body2" sx={{ mb: 1 }}>
                   {__(
-                    "Documents requis pour la licence compétition",
+                    "Required Documents for Competition License",
                     TEXT_DOMAIN,
                   )}
                 </Typography>
@@ -334,7 +312,7 @@ export function ParticipantsStep({
                     display="block"
                     sx={{ mb: 0.5 }}
                   >
-                    {__("Photo d'identité", TEXT_DOMAIN)}
+                    {__("ID Photo", TEXT_DOMAIN)}
                   </Typography>
                   <UploadField
                     file={selectedParticipant.identity_photo}
@@ -354,7 +332,7 @@ export function ParticipantsStep({
                     display="block"
                     sx={{ mb: 0.5 }}
                   >
-                    {__("Certificat médical", TEXT_DOMAIN)}
+                    {__("Medical Certificate", TEXT_DOMAIN)}
                   </Typography>
                   <UploadField
                     file={selectedParticipant.medical_certificate}
@@ -371,7 +349,7 @@ export function ParticipantsStep({
             )}
 
             <TextField
-              label={__("Informations complémentaires", TEXT_DOMAIN)}
+              label={__("Additional Information", TEXT_DOMAIN)}
               value={selectedParticipant.comment}
               onChange={(event) =>
                 onChangeParticipant(
@@ -400,14 +378,14 @@ export function ParticipantsStep({
           startIcon={<AddIcon />}
           onClick={onAddParticipant}
         >
-          {__("Ajouter une personne", TEXT_DOMAIN)}
+          {__("Add a Person", TEXT_DOMAIN)}
         </Button>
         <Button
           variant="contained"
           onClick={onNext}
-          disabled={!canContinueToContact}
+          disabled={!canNext}
         >
-          {__("Suivant", TEXT_DOMAIN)}
+          {__("Next", TEXT_DOMAIN)}
         </Button>
       </Box>
     </Box>

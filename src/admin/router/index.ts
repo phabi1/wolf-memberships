@@ -61,6 +61,14 @@ export const router = createHashRouter([
           },
         ],
       },
+      {
+        path: "requests",
+        Component: lazy(() => import("../pages/requests/ListPage.tsx")),
+      },
+      {
+        path: "requests/:requestId",
+        Component: lazy(() => import("../pages/requests/DetailsPage.tsx")),
+      },
     ],
   },
 ]);

@@ -7,8 +7,6 @@ class Plugin
 
     public function run()
     {
-
-
         register_activation_hook(__FILE__, [$this, 'activate']);
         register_deactivation_hook(__FILE__, [$this, 'deactivate']);
 
@@ -25,6 +23,7 @@ class Plugin
         $api = new Api();
         $api->setup();
 
+        $this->registerTextDomain();
         $this->registerBlocks();
     }
 
@@ -38,6 +37,11 @@ class Plugin
     {
         $uninstaller = new Activator\Uninstaller();
         $uninstaller->run();
+    }
+
+    public function registerTextDomain()
+    {
+        load_plugin_textdomain('wolf-membership', false, 'wolf-membership/languages');
     }
 
     private function registerBlocks()

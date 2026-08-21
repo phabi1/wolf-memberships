@@ -8,6 +8,8 @@ Author: Phabi1
 Version: 0.0.1
 Author URI: http://www.rollerlesloups.fr/
 Requires plugins: wolf-billing,wolf
+Text Domain: wolf-membership
+Domain Path: /languages
 */
 
 require __DIR__ . '/vendor/autoload.php';

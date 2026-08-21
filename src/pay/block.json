@@ -1,0 +1,20 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "wolf-membership/pay",
+	"version": "0.1.0",
+	"title": "Pay",
+	"category": "widgets",
+	"icon": "smiley",
+	"description": "Display payment options for membership campaigns.",
+	"example": {},
+	"supports": {
+		"html": false
+	},
+	"textdomain": "wolf-membership",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php",
+	"viewScript": "file:./view.js"
+}

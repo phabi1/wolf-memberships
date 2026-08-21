@@ -17,13 +17,27 @@ export function ReviewStep({
   onBack,
   onSubmit,
   submitting,
+}: {
+  contact: {
+    firstname: string;
+    lastname: string;
+    email: string;
+    phone: string;
+    notes?: string;
+  };
+  participants: any[];
+  lessons: any[];
+  totalToPay: number;
+  submitting: boolean;
+  onBack: () => void;
+  onSubmit: () => void;
 }) {
   const formattedTotal = formatPrice(totalToPay);
 
   return (
     <Box>
       <Typography variant="subtitle1" gutterBottom>
-        {__("Résumé de votre inscription", TEXT_DOMAIN)}
+        {__("Review Your Registration", TEXT_DOMAIN)}
       </Typography>
 
       <Card variant="outlined" sx={{ mb: 2 }}>
@@ -38,7 +52,7 @@ export function ReviewStep({
         </CardContent>
       </Card>
 
-      
+
 
       {participants.map((participant, index) => {
         const lesson = lessons.find((item) => String(item.id) === participant.lessonId);
@@ -47,50 +61,50 @@ export function ReviewStep({
           <Card key={index} variant="outlined" sx={{ mb: 2 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                {__("Personne", TEXT_DOMAIN)} {index + 1}
+                {__("Person", TEXT_DOMAIN)} {index + 1}
               </Typography>
               <Typography>
                 {participant.firstname} {participant.lastname}
               </Typography>
               <Typography>{participant.birthdate}</Typography>
               <Typography>
-                {__("Cours :", TEXT_DOMAIN)} {lesson ? lesson.title || lesson.name : __("Non sélectionné", TEXT_DOMAIN)}
+                {__("Course:", TEXT_DOMAIN)} {lesson ? lesson.title || lesson.name : __("Not selected", TEXT_DOMAIN)}
               </Typography>
               <Typography>
-                {__("Licence :", TEXT_DOMAIN)} {participant.licenseType === "competition" ? __("Compétition", TEXT_DOMAIN) : __("Loisir", TEXT_DOMAIN)}
+                {__("License:", TEXT_DOMAIN)} {participant.licenseType === "competition" ? __("Competition", TEXT_DOMAIN) : __("Hobby", TEXT_DOMAIN)}
               </Typography>
               <Typography>
-                {__("Adresse :", TEXT_DOMAIN)} {[
+                {__("Address:", TEXT_DOMAIN)} {[
                   participant.street,
                   participant.line1,
                   participant.line2,
                   participant.zipcode,
                   participant.city,
                   participant.country,
-                ].filter(Boolean).join(", ") || __("Non renseignée", TEXT_DOMAIN)}
+                ].filter(Boolean).join(", ") || __("Not provided", TEXT_DOMAIN)}
               </Typography>
               {isParticipantMinor(participant.birthdate) && (
                 <>
                   <Typography>
-                    {__("Tuteur 1 :", TEXT_DOMAIN)} {participant.tutor1?.firstname || __("Non renseigné", TEXT_DOMAIN)} {participant.tutor1?.lastname || ""} · {participant.tutor1?.email || ""} · {participant.tutor1?.phone || ""}
+                    {__("Guardian 1:", TEXT_DOMAIN)} {participant.tutor1?.firstname || __("Not provided", TEXT_DOMAIN)} {participant.tutor1?.lastname || ""} · {participant.tutor1?.email || ""} · {participant.tutor1?.phone || ""}
                   </Typography>
                   <Typography>
-                    {__("Tuteur 2 :", TEXT_DOMAIN)} {participant.tutor2?.firstname || __("Non renseigné", TEXT_DOMAIN)} {participant.tutor2?.lastname || ""} · {participant.tutor2?.email || ""} · {participant.tutor2?.phone || ""}
+                    {__("Guardian 2:", TEXT_DOMAIN)} {participant.tutor2?.firstname || __("Not provided", TEXT_DOMAIN)} {participant.tutor2?.lastname || ""} · {participant.tutor2?.email || ""} · {participant.tutor2?.phone || ""}
                   </Typography>
                 </>
               )}
               {participant.licenseType === "hobby" && (
                 <Typography>
-                  {__("Questionnaire de santé :", TEXT_DOMAIN)} {participant.healthQuestionnaire?.name || __("Fichier non ajouté", TEXT_DOMAIN)}
+                  {__("Health Questionnaire:", TEXT_DOMAIN)} {participant.healthQuestionnaire?.name || __("File not added", TEXT_DOMAIN)}
                 </Typography>
               )}
               {participant.licenseType === "competition" && (
                 <>
                   <Typography>
-                    {__("Photo d'identité :", TEXT_DOMAIN)} {participant.identityPhoto?.name || __("Fichier non ajouté", TEXT_DOMAIN)}
+                    {__("Identity Photo:", TEXT_DOMAIN)} {participant.identityPhoto?.name || __("File not added", TEXT_DOMAIN)}
                   </Typography>
                   <Typography>
-                    {__("Certificat médical :", TEXT_DOMAIN)} {participant.medicalCertificate?.name || __("Fichier non ajouté", TEXT_DOMAIN)}
+                    {__("Medical Certificate:", TEXT_DOMAIN)} {participant.medicalCertificate?.name || __("File not added", TEXT_DOMAIN)}
                   </Typography>
                 </>
               )}
@@ -102,7 +116,7 @@ export function ReviewStep({
 
       <Card variant="outlined" sx={{ mb: 2 }}>
         <CardContent>
-          <Typography variant="h6" gutterBottom>{__("Total à payer", TEXT_DOMAIN)}</Typography>
+          <Typography variant="h6" gutterBottom>{__("Total to Pay", TEXT_DOMAIN)}</Typography>
           <Typography variant="h5" color="primary">
             {formattedTotal}
           </Typography>
@@ -111,10 +125,10 @@ export function ReviewStep({
 
       <Box display="flex" justifyContent="space-between" mt={3}>
         <Button onClick={onBack} disabled={submitting}>
-          {__("Retour", TEXT_DOMAIN)}
+          {__("Back", TEXT_DOMAIN)}
         </Button>
         <Button variant="contained" color="success" onClick={onSubmit} disabled={submitting}>
-          {submitting ? __("Enregistrement...", TEXT_DOMAIN) : __("Confirmer l'inscription", TEXT_DOMAIN)}
+          {submitting ? __("Saving...", TEXT_DOMAIN) : __("Confirm", TEXT_DOMAIN)}
         </Button>
       </Box>
     </Box>

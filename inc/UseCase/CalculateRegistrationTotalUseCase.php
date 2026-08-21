@@ -16,7 +16,7 @@ class CalculateRegistrationTotalUseCase implements UseCaseInterface
 
     public function execute(array $params = []): array
     {
-        $campaignId = $params['campaignId'] ?? null;
+        $campaignId = $params['campaign_id'] ?? null;
         if (!$campaignId) {
             throw new \InvalidArgumentException('Campaign ID is required.');
         }
@@ -26,14 +26,15 @@ class CalculateRegistrationTotalUseCase implements UseCaseInterface
         $participants = $params['participants'] ?? [];
 
         $items = [];
-        $totalAmount = 0;
 
         foreach ($participants as $index => $participant) {
 
-            $birthdate = $participant['birthdate'] ?? '';
-            $amount = $unitPrice;
+        $participant = is_array($participant) ? (object) $participant : $participant;
+
+            $birthdate = $participant->birthdate ?? '';
 
             $items[] = [
+                'type' => 'participant',
                 'participant_index' => $index,
                 'name' => 'Cotisation',
                 'amount' => (int) $unitPrice,
@@ -41,29 +42,28 @@ class CalculateRegistrationTotalUseCase implements UseCaseInterface
             ];
 
             $items[] = [
+                'type' => 'fee',
                 'participant_index' => $index,
                 'name' => 'Licence FFRS',
                 'amount' => (int) $this->calculateLicenceFee($birthdate),
                 'currency' => 'EUR',
             ];
-
-            $totalAmount += $amount;
         }
 
         if (count($participants) > 2) {
             $discountAmount = 1000 * (count($participants) - 1);
             $items[] = [
+                'type' => 'discount',
                 'participant_index' => null,
                 'name' => 'Remise Famille',
                 'amount' => -(int) $discountAmount,
                 'currency' => 'EUR',
             ];
-            $totalAmount -= $discountAmount;
         }
 
         return [
             'items' => $items,
-            'total_amount' => (int) $totalAmount,
+            'total_amount' => (int) array_sum(array_column($items, 'amount')),
             'currency' => 'EUR',
         ];
     }
@@ -75,9 +75,9 @@ class CalculateRegistrationTotalUseCase implements UseCaseInterface
         }
 
         $licenses = [
-            ['age_min' => null, 'age_max' => 6, 'fee' => 1200],
-            ['age_min' => 6, 'age_max' => 13, 'fee' => 2000],
-            ['age_min' => 13, 'age_max' => null, 'fee' => 3000],
+            ['age_min' => null, 'age_max' => 6, 'fee' => 1463],
+            ['age_min' => 6, 'age_max' => 13, 'fee' => 2478],
+            ['age_min' => 13, 'age_max' => null, 'fee' => 4678],
         ];
 
         $birthDateTime = new \DateTime($birthdate);

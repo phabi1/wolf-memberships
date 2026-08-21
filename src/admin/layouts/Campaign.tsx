@@ -53,6 +53,9 @@ export default function LayoutCampaign() {
             >
               <ListItemText primary="Schedulers" />
             </ListItem>
+            <ListItem component={Link} to={`/campaign/${campaignId}/requests`}>
+              <ListItemText primary="Requests" />
+            </ListItem>
           </List>
         </Paper>
         <div>

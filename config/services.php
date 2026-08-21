@@ -52,6 +52,9 @@ return [
     'wolf-memberships.controller.wheel_assignment' => [
         'class' => \Wolf\Memberships\Controller\WheelAssignmentController::class
     ],
+    'wolf-memberships.controller.request' => [
+        'class' => \Wolf\Memberships\Controller\RequestController::class
+    ],
     'wolf-memberships.controller.file' => [
         'class' => \Wolf\Memberships\Controller\FileController::class
     ],
@@ -195,13 +198,25 @@ return [
         'class' => \Wolf\Memberships\UseCase\RegisterToCampaignUseCase::class,
         'arguments' => [
             '@wolf.entity.manager',
-            '@wolf-memberships.helper.member',
             '@wolf.mail'
         ],
         'tags' => [
             [
                 'name' => 'use_case',
                 'value' => 'wolf-memberships.register_to_campaign'
+            ]
+        ]
+    ],
+    'wolf-memberships.use_case.update_request' => [
+        'class' => \Wolf\Memberships\UseCase\UpdateRequestUseCase::class,
+        'arguments' => [
+            '@wolf.entity.manager',
+            '@wolf.mail'
+        ],
+        'tags' => [
+            [
+                'name' => 'use_case',
+                'value' => 'wolf-memberships.update_request'
             ]
         ]
     ],
@@ -217,4 +232,43 @@ return [
             ]
         ]
     ],
+    'wolf-memberships.use_case.mark_as_approved_request' => [
+        'class' => \Wolf\Memberships\UseCase\MarkAsApprovedRequestUseCase::class,
+        'arguments' => [
+            '@wolf.entity.manager',
+            '@wolf.mail'
+        ],
+        'tags' => [
+            [
+                'name' => 'use_case',
+                'value' => 'wolf-memberships.approve_request'
+            ]
+        ]
+    ],
+    'wolf-memberships.use_case.mark_as_rejected_request' => [
+        'class' => \Wolf\Memberships\UseCase\MarkAsRejectedRequestUseCase::class,
+        'arguments' => [
+            '@wolf.entity.manager',
+            '@wolf.mail'
+        ],
+        'tags' => [
+            [
+                'name' => 'use_case',
+                'value' => 'wolf-memberships.reject_request'
+            ]
+        ]
+    ],
+    'wolf-memberships.use_case.mark_as_cancelled_request' => [
+        'class' => \Wolf\Memberships\UseCase\MarkAsCancelledRequestUseCase::class,
+        'arguments' => [
+            '@wolf.entity.manager',
+            '@wolf.mail'
+        ],
+        'tags' => [
+            [
+                'name' => 'use_case',
+                'value' => 'wolf-memberships.cancel_request'
+            ]
+        ]
+    ]
 ];
